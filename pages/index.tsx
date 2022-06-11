@@ -1,8 +1,9 @@
 import type { InferGetServerSidePropsType, NextPage } from 'next';
 import { Node } from '@prisma/client';
 import NodeTable from '../components/NodeTable';
-import { Button } from '@chakra-ui/react';
+import { Box, Button, Container } from '@chakra-ui/react';
 import useSWR from 'swr';
+import { AddNode } from '../components/AddNode';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -13,9 +14,10 @@ const Home: NextPage = (props) => {
   if (!data) return <div>Loading ...</div>;
 
   return (
-    <div>
+    <Box p={4}>
+      <AddNode />
       <NodeTable nodes={data} />
-    </div>
+    </Box>
   );
 };
 

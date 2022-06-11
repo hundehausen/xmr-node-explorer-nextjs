@@ -1,7 +1,6 @@
 import { Network, Node } from '@prisma/client';
 import axios, { AxiosError } from 'axios';
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import { prisma } from '../../lib/prisma';
 
 export interface IInfo {
   height: number;
@@ -76,7 +75,7 @@ export const findNodePeers = async (id: number): Promise<Partial<Node>[]> => {
             port: peer.rpc_port,
           };
         });
-      let addedNodes: Node[] = [];
+      let addedNodes = [];
       for (const node of nodes) {
         const result = await getNodeInfo(node);
         if (result) {
@@ -91,7 +90,7 @@ export const findNodePeers = async (id: number): Promise<Partial<Node>[]> => {
             network = Network.STAGENET;
           }
           if (info.status === 'OK') {
-            const newNode = await prisma.node.upsert({
+            /* const newNode = await prisma.node.upsert({
               where: {
                 ip: ip,
               },
@@ -112,8 +111,16 @@ export const findNodePeers = async (id: number): Promise<Partial<Node>[]> => {
                 url: ip,
                 port: node.port || 0,
               },
+            }); */
+            addedNodes.push({
+              ip: ip,
+              port: node.port,
+              height: height,
+              network: network,
+              lastSeen: new Date(),
+              url: ip,
+              country: 'unknown',
             });
-            addedNodes.push(newNode);
             console.log('Added node');
           }
         }

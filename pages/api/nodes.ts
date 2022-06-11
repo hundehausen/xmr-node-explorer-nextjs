@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient, Node, Network } from '@prisma/client';
+import { Node, Network } from '@prisma/client';
 import { getNodeInfo } from './nodeService';
-const prisma = new PrismaClient();
+import { prisma } from '../../lib/prisma';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
@@ -56,7 +56,7 @@ const getHandler = async (
 const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
   const body: Partial<Node> = req.body;
   const { country, port, url } = body;
-  if (!country || !port || !url) {
+  if (!port || !url) {
     res.status(400).end('Missing required fields');
     return;
   }

@@ -1,0 +1,78 @@
+import { Box, Button, Input, Radio, RadioGroup, Stack } from '@chakra-ui/react';
+import { SetStateAction, useState } from 'react';
+import { Network, Node } from '@prisma/client';
+
+export const AddNode = () => {
+  const [node, setNode] = useState<Partial<Node>>({});
+  const [url, setUrl] = useState('');
+  const [country, setCountry] = useState('');
+  const [port, setPort] = useState(18089);
+  const [network, setNetwork] = useState<Network>(Network.MAINNET);
+
+  const handleUrlChange = (event: {
+    target: { value: SetStateAction<string> };
+  }) => setUrl(event.target.value);
+  const handlePortChange = (event: {
+    target: { value: SetStateAction<string> };
+  }) => setPort(Number(event.target.value));
+  const handleCountryChange = (event: {
+    target: { value: SetStateAction<string> };
+  }) => setCountry(event.target.value);
+  const handleNetworkChange = (nextValue: string) =>
+    setNetwork(Network[nextValue as keyof typeof Network]);
+  const handleSubmit = async () => {
+    setNode({
+      ...node,
+      url,
+      port,
+      country,
+      network,
+    });
+    try {
+      const response = await fetch('/api/nodes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(node),
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <Box>
+      <Stack direction="row">
+        <Input
+          value={url}
+          onChange={handleUrlChange}
+          placeholder="URL or IP address"
+          size="sm"
+        />
+        <Input
+          value={port}
+          onChange={handlePortChange}
+          placeholder="Port"
+          size="sm"
+        />
+        <Input
+          value={country}
+          onChange={handleCountryChange}
+          placeholder="Country"
+          size="sm"
+        />
+        <RadioGroup onChange={handleNetworkChange} value={network}>
+          <Stack direction="row">
+            <Radio value={Network.MAINNET}>Mainnet</Radio>
+            <Radio value={Network.STAGENET}>Stagenet</Radio>
+            <Radio value={Network.TESTNET}>Testnet</Radio>
+          </Stack>
+        </RadioGroup>
+        <Button onClick={handleSubmit} disabled={!network || !url || !port}>
+          Submit
+        </Button>
+      </Stack>
+    </Box>
+  );
+};
