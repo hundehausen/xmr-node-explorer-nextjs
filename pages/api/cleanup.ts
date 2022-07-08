@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from 'lib/prisma';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'GET') {
+  if (req.method === 'DELETE') {
     getHandler(req, res);
   } else {
     res.status(405).end(`Method ${req.method} Not Allowed`);

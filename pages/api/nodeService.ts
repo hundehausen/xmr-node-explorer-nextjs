@@ -108,6 +108,6 @@ export const findNodePeers = async (id: number): Promise<Partial<Node>[]> => {
     return [];
   } catch (error) {
     console.warn(error);
-    return [];
+    throw error;
   }
 };
