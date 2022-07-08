@@ -4,7 +4,6 @@ import { Network, Node } from '@prisma/client';
 import { useMutation } from 'react-query';
 
 export const AddNode = () => {
-  const [node, setNode] = useState<Partial<Node>>({});
   const [url, setUrl] = useState('');
   const [country, setCountry] = useState('');
   const [port, setPort] = useState(18089);
@@ -39,7 +38,7 @@ export const AddNode = () => {
   );
 
   const handleSubmit = () => {
-    mutations.mutate({ ...node, url, port, country, network });
+    mutations.mutate({ url, port, country, network });
   };
 
   return (

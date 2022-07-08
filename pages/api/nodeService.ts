@@ -75,7 +75,7 @@ export const findNodePeers = async (id: number): Promise<Partial<Node>[]> => {
             port: peer.rpc_port,
           };
         });
-      let addedNodes = [];
+      const addedNodes = [];
       for (const node of nodes) {
         const result = await getNodeInfo(node);
         if (result) {
@@ -90,28 +90,6 @@ export const findNodePeers = async (id: number): Promise<Partial<Node>[]> => {
             network = Network.STAGENET;
           }
           if (info.status === 'OK') {
-            /* const newNode = await prisma.node.upsert({
-              where: {
-                ip: ip,
-              },
-              update: {
-                country: '',
-                height: height,
-                lastSeen: new Date(),
-                network: network,
-                url: ip,
-                port: node.port,
-              },
-              create: {
-                ip: ip,
-                country: '',
-                height: height,
-                lastSeen: new Date(),
-                network: network,
-                url: ip,
-                port: node.port || 0,
-              },
-            }); */
             addedNodes.push({
               ip: ip,
               port: node.port,
