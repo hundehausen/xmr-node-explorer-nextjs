@@ -1,5 +1,5 @@
 declare global {
-    interface Info {
-        height: number;
-    }
+  interface Info {
+    height: number;
+  }
 }

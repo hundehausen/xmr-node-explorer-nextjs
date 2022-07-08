@@ -9,7 +9,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   } else if (req.method === 'POST') {
     postHandler(req, res);
   } else {
-    res.status(405).end(`Method ${req.method} Not Allowed. Allowed methods: GET, POST`);
+    res
+      .status(405)
+      .end(`Method ${req.method} Not Allowed. Allowed methods: GET, POST`);
   }
 }
 
@@ -25,14 +27,6 @@ const getHandler = async (
       if (result) {
         const { info, ip } = result;
         const { height, nettype } = info;
-        let network;
-        if (nettype === 'mainnet') {
-          network = Network.MAINNET;
-        } else if (nettype === 'testnet') {
-          network = Network.TESTNET;
-        } else {
-          network = Network.STAGENET;
-        }
 
         if (info.status === 'OK') {
           await prisma.node.update({

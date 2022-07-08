@@ -35,7 +35,9 @@ const NodeTable = ({ nodes }: NodeTableProps) => {
     height: node.height,
     network: node.network,
     ip: node.ip,
-    lastSeenFromNow: formatDistance(new Date(node.lastSeen), new Date(), { addSuffix: true }),
+    lastSeenFromNow: formatDistance(new Date(node.lastSeen), new Date(), {
+      addSuffix: true,
+    }),
   }));
   const columnKeys: (keyof IRows)[] = [
     'url',
@@ -92,7 +94,7 @@ const NodeTable = ({ nodes }: NodeTableProps) => {
           {rows.map((row) => (
             <Tr key={row.id}>
               {columnKeys.map((columnKey) => (
-                <Td key={columnKey}>{row[columnKey]?.toString() || ""}</Td>
+                <Td key={columnKey}>{row[columnKey]?.toString() || ''}</Td>
               ))}
             </Tr>
           ))}
