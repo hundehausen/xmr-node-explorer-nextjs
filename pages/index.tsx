@@ -1,22 +1,25 @@
-import type { InferGetServerSidePropsType, NextPage } from 'next';
+import type { NextPage } from 'next';
 import { Node } from '@prisma/client';
 import NodeTable from '../components/NodeTable';
-import { Box, Button, Container } from '@chakra-ui/react';
-import useSWR from 'swr';
-import { AddNode } from '../components/AddNode';
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+import { Box } from '@chakra-ui/react';
+import { AddNode } from 'components/AddNode';
+import { useQuery } from 'react-query';
 
 const Home: NextPage = (props) => {
-  const { data, error } = useSWR<Node[]>('/api/nodes?update=true', fetcher);
+  const { isLoading, isError, data, error } = useQuery<Node[], Error>(
+    'nodes',
+    async () => {
+      return fetch('/api/nodes?update=true').then((res) => res.json());
+    }
+  );
 
-  if (error) return <div>An error occured.</div>;
-  if (!data) return <div>Loading ...</div>;
+  if (isLoading) return <p>Loading...</p>;
+  if (isError) return <p>Error: {error.message}</p>;
 
   return (
     <Box p={4}>
       <AddNode />
-      <NodeTable nodes={data} />
+      {data && <NodeTable nodes={data} />}
     </Box>
   );
 };

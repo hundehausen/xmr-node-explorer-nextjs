@@ -1,6 +1,6 @@
 import { Network, Node } from '@prisma/client';
 import axios, { AxiosError } from 'axios';
-import { prisma } from '../../lib/prisma';
+import { prisma } from 'lib/prisma';
 
 export interface IInfo {
   height: number;

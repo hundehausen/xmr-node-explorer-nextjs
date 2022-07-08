@@ -1,6 +1,7 @@
 import { Box, Button, Input, Radio, RadioGroup, Stack } from '@chakra-ui/react';
 import { SetStateAction, useState } from 'react';
 import { Network, Node } from '@prisma/client';
+import { useMutation } from 'react-query';
 
 export const AddNode = () => {
   const [node, setNode] = useState<Partial<Node>>({});
@@ -12,33 +13,33 @@ export const AddNode = () => {
   const handleUrlChange = (event: {
     target: { value: SetStateAction<string> };
   }) => setUrl(event.target.value);
+
   const handlePortChange = (event: {
     target: { value: SetStateAction<string> };
   }) => setPort(Number(event.target.value));
+
   const handleCountryChange = (event: {
     target: { value: SetStateAction<string> };
   }) => setCountry(event.target.value);
+
   const handleNetworkChange = (nextValue: string) =>
     setNetwork(Network[nextValue as keyof typeof Network]);
-  const handleSubmit = async () => {
-    setNode({
-      ...node,
-      url,
-      port,
-      country,
-      network,
-    });
-    try {
-      const response = await fetch('/api/nodes', {
+
+  const mutations = useMutation<Response, unknown, Partial<Node>, unknown>(
+    'nodes',
+    async (newNode) => {
+      return fetch('/api/nodes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(node),
+        body: JSON.stringify(newNode),
       });
-    } catch (error) {
-      console.error(error);
     }
+  );
+
+  const handleSubmit = () => {
+    mutations.mutate({ ...node, url, port, country, network });
   };
 
   return (

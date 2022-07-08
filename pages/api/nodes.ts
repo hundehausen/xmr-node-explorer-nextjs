@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Node, Network } from '@prisma/client';
 import { getNodeInfo } from './nodeService';
-import { prisma } from '../../lib/prisma';
+import { prisma } from 'lib/prisma';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
@@ -9,7 +9,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   } else if (req.method === 'POST') {
     postHandler(req, res);
   } else {
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    res.status(405).end(`Method ${req.method} Not Allowed. Allowed methods: GET, POST`);
   }
 }
 
@@ -19,7 +19,7 @@ const getHandler = async (
 ) => {
   const { update } = req.query;
   const nodes = await prisma.node.findMany({ orderBy: { lastSeen: 'desc' } });
-  if (update.toString() === 'true') {
+  if (update?.toString() === 'true') {
     nodes.forEach(async (node) => {
       const result = await getNodeInfo({ url: node.url, port: node.port });
       if (result) {
@@ -46,7 +46,9 @@ const getHandler = async (
       }
     });
     console.log('Updated nodes');
-    const updatedNodes = await prisma.node.findMany({});
+    const updatedNodes = await prisma.node.findMany({
+      orderBy: { lastSeen: 'desc' },
+    });
     res.status(200).json(updatedNodes);
   } else {
     res.status(200).json(nodes);
