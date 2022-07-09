@@ -57,6 +57,7 @@ export const AddNode = () => {
           placeholder="URL or IP address"
           size="sm"
           minWidth={160}
+          minLength={9}
         />
         <Input
           value={port}

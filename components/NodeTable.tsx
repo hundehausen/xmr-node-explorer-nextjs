@@ -24,9 +24,10 @@ interface IRows {
 
 interface NodeTableProps {
   nodes: Node[];
+  maxHeight: number;
 }
 
-const NodeTable = ({ nodes }: NodeTableProps) => {
+const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
   const rows: IRows[] = nodes.map((node) => ({
     id: node.id,
     url: node.url,
@@ -94,7 +95,12 @@ const NodeTable = ({ nodes }: NodeTableProps) => {
           {rows.map((row) => (
             <Tr key={row.id}>
               {columnKeys.map((columnKey) => (
-                <Td key={columnKey}>{row[columnKey]?.toString() || ''}</Td>
+                <Td
+                  color={row[columnKey] === maxHeight ? 'green' : 'black'}
+                  key={columnKey}
+                >
+                  {row[columnKey]?.toString() || ''}
+                </Td>
               ))}
             </Tr>
           ))}

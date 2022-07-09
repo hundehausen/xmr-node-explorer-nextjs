@@ -4,6 +4,7 @@ import NodeTable from '../components/NodeTable';
 import { Box, Heading } from '@chakra-ui/react';
 import { AddNode } from 'components/AddNode';
 import { useQuery } from 'react-query';
+import { useEffect, useState } from 'react';
 
 const Home: NextPage = (props) => {
   const { isLoading, isError, data, error } = useQuery<Node[], Error>(
@@ -12,6 +13,17 @@ const Home: NextPage = (props) => {
       return fetch('/api/nodes?update=true').then((res) => res.json());
     }
   );
+  const [maxHeight, setMaxHeight] = useState(0);
+
+  useEffect((): void => {
+    if (data) {
+      const allHeights = data.map((node) => node.height);
+      const largestNum = allHeights.reduce((accumulatedValue, currentValue) => {
+        return Math.max(accumulatedValue, currentValue);
+      });
+      setMaxHeight(largestNum);
+    }
+  }, [data]);
 
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error: {error.message}</p>;
@@ -23,7 +35,7 @@ const Home: NextPage = (props) => {
         <AddNode />
       </Box>
 
-      {data && <NodeTable nodes={data} />}
+      {data && <NodeTable nodes={data} maxHeight={maxHeight} />}
     </Box>
   );
 };
