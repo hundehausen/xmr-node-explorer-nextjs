@@ -87,7 +87,11 @@ export const AddNode = () => {
         <Button
           onClick={handleSubmit}
           disabled={!network || !url || !port}
-          colorScheme="blackAlpha"
+          bgGradient="linear(to-l, #7928CA, #FF0080)"
+          textColor={'white'}
+          _hover={{
+            bgGradient: 'linear(to-r, red.500, yellow.500)',
+          }}
           minWidth={110}
         >
           Submit

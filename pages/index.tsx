@@ -9,9 +9,7 @@ import { useEffect, useState } from 'react';
 const Home: NextPage = (props) => {
   const { isLoading, isError, data, error } = useQuery<Node[], Error>(
     'nodes',
-    async () => {
-      return fetch('/api/nodes?update=true').then((res) => res.json());
-    }
+    async () => fetch('/api/nodes?update=true').then((res) => res.json())
   );
   const [maxHeight, setMaxHeight] = useState(0);
 
@@ -31,10 +29,15 @@ const Home: NextPage = (props) => {
   return (
     <Box p={4}>
       <Box>
-        <Heading>Portemonero Node Explorer</Heading>
+        <Heading
+          bgGradient="linear(to-l, #7928CA, #FF0080)"
+          bgClip="text"
+          marginBottom="2"
+        >
+          Portemonero Node Explorer
+        </Heading>
         <AddNode />
       </Box>
-
       {data && <NodeTable nodes={data} maxHeight={maxHeight} />}
     </Box>
   );
