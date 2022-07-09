@@ -1,4 +1,11 @@
-import { Box, Button, Input, Radio, RadioGroup, Stack } from '@chakra-ui/react';
+import {
+  Button,
+  Flex,
+  Input,
+  Radio,
+  RadioGroup,
+  Stack,
+} from '@chakra-ui/react';
 import { SetStateAction, useState } from 'react';
 import { Network, Node } from '@prisma/client';
 import { useMutation } from 'react-query';
@@ -42,26 +49,33 @@ export const AddNode = () => {
   };
 
   return (
-    <Box>
-      <Stack direction="row">
+    <Flex wrap="wrap" id="flex">
+      <Stack spacing={4} direction="row" align="center" w="100%">
         <Input
           value={url}
           onChange={handleUrlChange}
           placeholder="URL or IP address"
           size="sm"
+          minWidth={160}
         />
         <Input
           value={port}
           onChange={handlePortChange}
           placeholder="Port"
           size="sm"
+          minWidth={160}
+          maxLength={6}
+          type="number"
         />
         <Input
           value={country}
           onChange={handleCountryChange}
           placeholder="Country"
           size="sm"
+          minWidth={160}
+          maxLength={30}
         />
+
         <RadioGroup onChange={handleNetworkChange} value={network}>
           <Stack direction="row">
             <Radio value={Network.MAINNET}>Mainnet</Radio>
@@ -69,10 +83,15 @@ export const AddNode = () => {
             <Radio value={Network.TESTNET}>Testnet</Radio>
           </Stack>
         </RadioGroup>
-        <Button onClick={handleSubmit} disabled={!network || !url || !port}>
+        <Button
+          onClick={handleSubmit}
+          disabled={!network || !url || !port}
+          colorScheme="blackAlpha"
+          minWidth={110}
+        >
           Submit
         </Button>
       </Stack>
-    </Box>
+    </Flex>
   );
 };

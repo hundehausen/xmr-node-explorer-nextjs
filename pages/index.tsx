@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { Node } from '@prisma/client';
 import NodeTable from '../components/NodeTable';
-import { Box } from '@chakra-ui/react';
+import { Box, Heading } from '@chakra-ui/react';
 import { AddNode } from 'components/AddNode';
 import { useQuery } from 'react-query';
 
@@ -18,7 +18,11 @@ const Home: NextPage = (props) => {
 
   return (
     <Box p={4}>
-      <AddNode />
+      <Box>
+        <Heading>Portemonero Node Explorer</Heading>
+        <AddNode />
+      </Box>
+
       {data && <NodeTable nodes={data} />}
     </Box>
   );
