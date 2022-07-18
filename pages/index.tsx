@@ -14,11 +14,12 @@ const Home: NextPage = (props) => {
   const [maxHeight, setMaxHeight] = useState(0);
 
   useEffect((): void => {
-    if (data) {
-      const allHeights = data.map((node) => node.height);
-      const largestNum = allHeights.reduce((accumulatedValue, currentValue) => {
-        return Math.max(accumulatedValue, currentValue);
-      });
+    if (data?.length) {
+      const allHeights = data?.map((node) => node.height) ?? [];
+      const largestNum =
+        allHeights?.reduce((accumulatedValue, currentValue) => {
+          return Math.max(accumulatedValue, currentValue);
+        }) || 0;
       setMaxHeight(largestNum);
     }
   }, [data]);
