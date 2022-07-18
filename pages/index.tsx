@@ -5,8 +5,9 @@ import { Box, Heading } from '@chakra-ui/react';
 import { AddNode } from 'components/AddNode';
 import { useQuery } from 'react-query';
 import { useEffect, useState } from 'react';
+import Head from 'next/head';
 
-const Home: NextPage = (props) => {
+const Home: NextPage = () => {
   const { isLoading, isError, data, error } = useQuery<Node[], Error>(
     'nodes',
     async () => fetch('/api/nodes?update=true').then((res) => res.json())
@@ -29,6 +30,9 @@ const Home: NextPage = (props) => {
 
   return (
     <Box p={4}>
+      <Head>
+        <link rel="shortcut icon" href="/favicon.ico" />
+      </Head>
       <Box>
         <Heading
           bgGradient="linear(to-l, #7928CA, #FF0080)"
