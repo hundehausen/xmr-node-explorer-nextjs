@@ -19,28 +19,36 @@ const getHandler = async (
   req: NextApiRequest,
   res: NextApiResponse<Node[]>
 ) => {
-  const { update } = req.query;
-  const nodes = await prisma.node.findMany({ orderBy: { lastSeen: 'desc' } });
-  if (update?.toString() === 'true') {
+  const update = req.query.update as string;
+  const network = req.query.network as Network | undefined;
+
+  const nodes = await prisma.node.findMany({
+    where: { network: network },
+    orderBy: { lastSeen: 'desc' },
+  });
+
+  if (update === 'true') {
     nodes.forEach(async (node) => {
       const result = await getNodeInfo({ url: node.url, port: node.port });
       if (result) {
         const { info, ip } = result;
-        const { height, nettype } = info;
+        const { height } = info;
 
         if (info.status === 'OK') {
           await prisma.node.update({
             where: { id: node.id },
             data: {
               height: height,
+              ip: ip,
               lastSeen: new Date(),
             },
           });
         }
       }
     });
-    console.log('Updated nodes');
+
     const updatedNodes = await prisma.node.findMany({
+      where: { network: network },
       orderBy: { lastSeen: 'desc' },
     });
     res.status(200).json(updatedNodes);

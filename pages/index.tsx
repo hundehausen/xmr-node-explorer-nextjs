@@ -1,20 +1,40 @@
 import type { NextPage } from 'next';
-import { Node } from '@prisma/client';
-import NodeTable from '../components/NodeTable';
+import { Network, Node } from '@prisma/client';
 import { Box, Heading } from '@chakra-ui/react';
-import { AddNode } from 'components/AddNode';
-import { useQuery } from 'react-query';
+import NodeTable from '../components/NodeTable';
+import AddNode from 'components/AddNode';
+import NetworkSelector from 'components/NetworkSelector';
+import { QueryClient, useQuery } from 'react-query';
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 
 const Home: NextPage = () => {
-  const { isLoading, isError, data, error } = useQuery<Node[], Error>(
-    'nodes',
-    async () => fetch('/api/nodes?update=true').then((res) => res.json())
-  );
+  const [network, setNetwork] = useState<Network>(Network.MAINNET);
   const [maxHeight, setMaxHeight] = useState(0);
 
-  useEffect((): void => {
+  const queryClient = new QueryClient();
+
+  const useNodesQuery = (network: Network) =>
+    useQuery<Node[], Error>(
+      ['nodes', network],
+      () =>
+        fetch(`/api/nodes?update=true&network=${network}`).then((res) =>
+          res.json()
+        ),
+      {
+        initialData: () => {
+          const allNodes = queryClient.getQueryData<Node[]>('nodes');
+          const filtredNodes = allNodes?.filter(
+            (node) => node.network === network
+          );
+          return filtredNodes?.length ? filtredNodes : undefined;
+        },
+      }
+    );
+
+  const { isLoading, isError, data, error } = useNodesQuery(network);
+
+  useEffect(() => {
     if (data?.length) {
       const allHeights = data?.map((node) => node.height) ?? [];
       const largestNum =
@@ -29,7 +49,7 @@ const Home: NextPage = () => {
   if (isError) return <p>Error: {error.message}</p>;
 
   return (
-    <Box p={4}>
+    <Box p={8}>
       <Head>
         <link rel="shortcut icon" href="/favicon.ico" />
       </Head>
@@ -37,11 +57,12 @@ const Home: NextPage = () => {
         <Heading
           bgGradient="linear(to-l, #7928CA, #FF0080)"
           bgClip="text"
-          marginBottom="2"
+          marginBottom={2}
         >
           Portemonero Node Explorer
         </Heading>
         <AddNode />
+        <NetworkSelector network={network} setNetwork={setNetwork} />
       </Box>
       {data && <NodeTable nodes={data} maxHeight={maxHeight} />}
     </Box>

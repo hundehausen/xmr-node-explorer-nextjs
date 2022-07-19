@@ -1,20 +1,12 @@
-import {
-  Button,
-  Flex,
-  Input,
-  Radio,
-  RadioGroup,
-  Stack,
-} from '@chakra-ui/react';
+import { Box, Button, Heading, Input, Wrap, WrapItem } from '@chakra-ui/react';
 import { SetStateAction, useState } from 'react';
-import { Network, Node } from '@prisma/client';
+import { Node } from '@prisma/client';
 import { useMutation, useQueryClient } from 'react-query';
 
-export const AddNode = () => {
+const AddNode = () => {
   const [url, setUrl] = useState('');
   const [country, setCountry] = useState('');
   const [port, setPort] = useState(18089);
-  const [network, setNetwork] = useState<Network>(Network.MAINNET);
 
   const handleUrlChange = (event: {
     target: { value: SetStateAction<string> };
@@ -27,9 +19,6 @@ export const AddNode = () => {
   const handleCountryChange = (event: {
     target: { value: SetStateAction<string> };
   }) => setCountry(event.target.value);
-
-  const handleNetworkChange = (nextValue: string) =>
-    setNetwork(Network[nextValue as keyof typeof Network]);
 
   const mutations = useMutation<Response, unknown, Partial<Node>, unknown>(
     'nodes',
@@ -48,13 +37,12 @@ export const AddNode = () => {
 
   const handleSubmit = () => {
     mutations.mutate(
-      { url, port, country, network },
+      { url, port, country },
       {
         onSuccess: () => {
           setUrl('');
           setPort(18089);
           setCountry('');
-          setNetwork(Network.MAINNET);
           queryClient.invalidateQueries(['nodes']);
         },
       }
@@ -62,54 +50,64 @@ export const AddNode = () => {
   };
 
   return (
-    <Flex wrap="wrap" id="flex">
-      <Stack spacing={4} direction="row" align="center" w="100%">
-        <Input
-          value={url}
-          onChange={handleUrlChange}
-          placeholder="URL or IP address"
-          size="sm"
-          minWidth={160}
-          minLength={9}
-        />
-        <Input
-          value={port}
-          onChange={handlePortChange}
-          placeholder="Port"
-          size="sm"
-          minWidth={160}
-          maxLength={6}
-          type="number"
-        />
-        <Input
-          value={country}
-          onChange={handleCountryChange}
-          placeholder="Country"
-          size="sm"
-          minWidth={160}
-          maxLength={30}
-        />
-
-        <RadioGroup onChange={handleNetworkChange} value={network}>
-          <Stack direction="row">
-            <Radio value={Network.MAINNET}>Mainnet</Radio>
-            <Radio value={Network.STAGENET}>Stagenet</Radio>
-            <Radio value={Network.TESTNET}>Testnet</Radio>
-          </Stack>
-        </RadioGroup>
-        <Button
-          onClick={handleSubmit}
-          disabled={!network || !url || !port}
-          bgGradient="linear(to-l, #7928CA, #FF0080)"
-          textColor={'white'}
-          _hover={{
-            bgGradient: 'linear(to-r, red.500, yellow.500)',
-          }}
-          minWidth={110}
-        >
-          Submit
-        </Button>
-      </Stack>
-    </Flex>
+    <Box p={5} m={5} shadow="md" borderWidth="1px">
+      <Heading
+        size="md"
+        paddingBottom={2}
+        bgGradient="linear(to-l, #7928CA, #FF0080)"
+        bgClip="text"
+      >
+        Add a new node
+      </Heading>
+      <Wrap align="center" spacing={4}>
+        <WrapItem>
+          <Input
+            value={url}
+            onChange={handleUrlChange}
+            placeholder="URL or IP address"
+            size="sm"
+            minWidth={160}
+            minLength={9}
+          />
+        </WrapItem>
+        <WrapItem>
+          <Input
+            value={port}
+            onChange={handlePortChange}
+            placeholder="Port"
+            size="sm"
+            minWidth={160}
+            maxLength={6}
+            type="number"
+          />
+        </WrapItem>
+        <WrapItem>
+          <Input
+            value={country}
+            onChange={handleCountryChange}
+            placeholder="Country"
+            size="sm"
+            minWidth={160}
+            maxLength={30}
+          />
+        </WrapItem>
+        <WrapItem>
+          <Button
+            onClick={handleSubmit}
+            disabled={!url || !port}
+            bgGradient="linear(to-l, #7928CA, #FF0080)"
+            textColor={'white'}
+            _hover={{
+              bgGradient: 'linear(to-r, red.500, yellow.500)',
+            }}
+            minWidth={110}
+          >
+            Submit
+          </Button>
+        </WrapItem>
+      </Wrap>
+    </Box>
   );
 };
+
+export default AddNode;
