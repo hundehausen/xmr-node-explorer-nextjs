@@ -16,9 +16,10 @@ model Node {
   ip       String   @unique
   lastSeen DateTime @default(now())
   port     Int
-  url      String?  @unique
+  url      String?
   network  Network  @default(MAINNET)
 
+  @@unique([url, port])
 }
 
 enum Network {

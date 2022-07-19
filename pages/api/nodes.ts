@@ -71,7 +71,10 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
 
     const node = await prisma.node.upsert({
       where: {
-        url,
+        url_port: {
+          url,
+          port,
+        },
       },
       update: {
         country: country,
