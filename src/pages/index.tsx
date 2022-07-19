@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { Network, Node } from '@prisma/client';
 import { Box, Heading } from '@chakra-ui/react';
-import NodeTable from '../components/NodeTable';
+import NodeTable from 'components/NodeTable';
 import AddNode from 'components/AddNode';
 import NetworkSelector from 'components/NetworkSelector';
 import { useQuery, useQueryClient } from 'react-query';
