@@ -2,11 +2,13 @@ import { Box, Button, Heading, Input, Wrap, WrapItem } from '@chakra-ui/react';
 import { SetStateAction, useState } from 'react';
 import { Node } from '@prisma/client';
 import { useMutation, useQueryClient } from 'react-query';
+import type { QueryClient } from 'react-query';
 
 const AddNode = () => {
   const [url, setUrl] = useState('');
   const [country, setCountry] = useState('');
   const [port, setPort] = useState(18089);
+  const [queryClient] = useState<QueryClient>(useQueryClient());
 
   const handleUrlChange = (event: {
     target: { value: SetStateAction<string> };
@@ -32,8 +34,6 @@ const AddNode = () => {
       });
     }
   );
-
-  const queryClient = useQueryClient();
 
   const handleSubmit = () => {
     mutations.mutate(

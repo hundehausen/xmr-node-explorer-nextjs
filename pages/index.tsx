@@ -4,15 +4,15 @@ import { Box, Heading } from '@chakra-ui/react';
 import NodeTable from '../components/NodeTable';
 import AddNode from 'components/AddNode';
 import NetworkSelector from 'components/NetworkSelector';
-import { QueryClient, useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
+import type { QueryClient } from 'react-query';
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 
 const Home: NextPage = () => {
   const [network, setNetwork] = useState<Network>(Network.MAINNET);
   const [maxHeight, setMaxHeight] = useState(0);
-
-  const queryClient = new QueryClient();
+  const [queryClient] = useState<QueryClient>(useQueryClient());
 
   const useNodesQuery = (network: Network) =>
     useQuery<Node[], Error>(
