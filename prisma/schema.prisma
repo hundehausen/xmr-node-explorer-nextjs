@@ -19,7 +19,7 @@ model Node {
   url      String?
   network  Network  @default(MAINNET)
 
-  @@unique([url, port])
+  @@unique([url, port], name: "nodeIdentifier")
 }
 
 enum Network {
