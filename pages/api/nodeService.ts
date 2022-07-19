@@ -19,22 +19,34 @@ export const getNodeInfo = async (
   try {
     const host = node.url || node.ip;
     const url = `http://${host}:${node.port}/json_rpc`;
-    const response = await axios.post(url, {
-      timeout: 300,
-      jsonrpc: '2.0',
-      id: '0',
-      method: 'get_info',
-      contentType: 'application/json',
-    });
+    const response = await axios.post(
+      url,
+      {
+        jsonrpc: '2.0',
+        id: '0',
+        method: 'get_info',
+        contentType: 'application/json',
+      },
+      {
+        timeout: 2000,
+      }
+    );
+
+    if (response.data.error) {
+      console.warn(response.data.error);
+      return null;
+    }
+
     if (response?.data?.result) {
       return {
         info: response.data.result,
         ip: response.request.socket.remoteAddress,
       };
-    } else {
-      return null;
     }
+
+    return null;
   } catch (error) {
+    console.warn(error);
     if (axios.isAxiosError(error)) {
       const serverError = error as AxiosError;
       if (serverError && serverError.response) {

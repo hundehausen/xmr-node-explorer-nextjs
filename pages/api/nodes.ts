@@ -52,51 +52,56 @@ const getHandler = async (
 const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
   const body: Partial<Node> = req.body;
   const { country, port, url } = body;
+
   if (!port || !url) {
     res.status(400).end('Missing required fields');
     return;
   }
-  const result = await getNodeInfo({ url, port });
-  if (result) {
-    const { info, ip } = result;
-    const { height, nettype } = info;
-    let network;
-    if (nettype === 'mainnet') {
-      network = Network.MAINNET;
-    } else if (nettype === 'testnet') {
-      network = Network.TESTNET;
-    } else {
-      network = Network.STAGENET;
-    }
 
-    const node = await prisma.node.upsert({
-      where: {
-        nodeIdentifier: {
-          url,
-          port,
-        },
-      },
-      update: {
-        country: country,
-        lastSeen: new Date(),
-        port: port,
-        url: url,
-        ip: ip,
-        height: height,
-        network: network,
-      },
-      create: {
-        country: country,
-        lastSeen: new Date(),
-        port: port,
-        url: url,
-        ip: ip,
-        height: height,
-        network: network,
-      },
-    });
-    res.status(200).json(node);
-  } else {
-    res.status(500).end('Error getting node info');
+  const result = await getNodeInfo({ url, port });
+
+  if (!result) {
+    res.status(500).end('Failed to get node info');
+    return;
   }
+
+  const { info, ip } = result;
+  const { height, nettype } = info;
+
+  let network;
+  if (nettype === 'mainnet') {
+    network = Network.MAINNET;
+  } else if (nettype === 'testnet') {
+    network = Network.TESTNET;
+  } else {
+    network = Network.STAGENET;
+  }
+
+  const node = await prisma.node.upsert({
+    where: {
+      nodeIdentifier: {
+        url,
+        port,
+      },
+    },
+    update: {
+      country: country,
+      lastSeen: new Date(),
+      port: port,
+      url: url,
+      ip: ip,
+      height: height,
+      network: network,
+    },
+    create: {
+      country: country,
+      lastSeen: new Date(),
+      port: port,
+      url: url,
+      ip: ip,
+      height: height,
+      network: network,
+    },
+  });
+  res.status(200).json(node);
 };
