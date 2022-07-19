@@ -8,7 +8,7 @@ import {
 } from '@chakra-ui/react';
 import { SetStateAction, useState } from 'react';
 import { Network, Node } from '@prisma/client';
-import { useMutation } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 
 export const AddNode = () => {
   const [url, setUrl] = useState('');
@@ -44,8 +44,21 @@ export const AddNode = () => {
     }
   );
 
+  const queryClient = useQueryClient();
+
   const handleSubmit = () => {
-    mutations.mutate({ url, port, country, network });
+    mutations.mutate(
+      { url, port, country, network },
+      {
+        onSuccess: () => {
+          setUrl('');
+          setPort(18089);
+          setCountry('');
+          setNetwork(Network.MAINNET);
+          queryClient.invalidateQueries(['nodes']);
+        },
+      }
+    );
   };
 
   return (
