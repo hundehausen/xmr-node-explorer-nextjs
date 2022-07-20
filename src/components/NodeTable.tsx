@@ -19,7 +19,7 @@ interface IRows {
   height: number;
   network: string;
   ip: string;
-  version: string;
+  version: string | null;
   lastSeenFromNow: string;
 }
 
