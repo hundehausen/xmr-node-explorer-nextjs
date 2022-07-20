@@ -4,8 +4,8 @@ import { Box, Heading } from '@chakra-ui/react';
 import NodeTable from 'components/NodeTable';
 import AddNode from 'components/AddNode';
 import NetworkSelector from 'components/NetworkSelector';
-import { useQuery, useQueryClient } from 'react-query';
-import type { QueryClient } from 'react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import type { QueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 
@@ -23,11 +23,11 @@ const Home: NextPage = () => {
         ),
       {
         initialData: () => {
-          const allNodes = queryClient.getQueryData<Node[]>('nodes');
-          const filtredNodes = allNodes?.filter(
+          const allNodes = queryClient.getQueryData<Node[]>(['nodes']) ?? [];
+          const filtredNodes = allNodes.filter(
             (node) => node.network === network
           );
-          return filtredNodes?.length ? filtredNodes : undefined;
+          return filtredNodes?.length ? filtredNodes : [];
         },
       }
     );
@@ -46,7 +46,7 @@ const Home: NextPage = () => {
   }, [data]);
 
   if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Error: {error.message}</p>;
+  if (isError) return <p>Error: {error?.message}</p>;
 
   return (
     <Box p={8}>

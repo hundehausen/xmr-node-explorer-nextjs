@@ -1,8 +1,8 @@
 import { Box, Button, Heading, Input, Wrap, WrapItem } from '@chakra-ui/react';
 import { SetStateAction, useState } from 'react';
 import { Node } from '@prisma/client';
-import { useMutation, useQueryClient } from 'react-query';
-import type { QueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { QueryClient } from '@tanstack/react-query';
 
 const AddNode = () => {
   const [url, setUrl] = useState('');
@@ -23,7 +23,7 @@ const AddNode = () => {
   }) => setCountry(event.target.value);
 
   const mutations = useMutation<Response, unknown, Partial<Node>, unknown>(
-    'nodes',
+    ['nodes'],
     async (newNode) => {
       return fetch('/api/nodes', {
         method: 'POST',
