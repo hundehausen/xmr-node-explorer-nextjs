@@ -52,6 +52,8 @@ const Home: NextPage = () => {
     <Box p={8}>
       <Head>
         <link rel="shortcut icon" href="/favicon.ico" />
+        <title>Portemonero Node Explorer</title>
+        <meta name="description" content="Yet Another Monero Node Explorer." />
       </Head>
       <Box>
         <Heading
