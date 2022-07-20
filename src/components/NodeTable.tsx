@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { Node } from '@prisma/client';
 import formatDistance from 'date-fns/formatDistance';
+import Link from 'next/link';
 
 interface IRows {
   id: number;
@@ -90,7 +91,13 @@ const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
   return (
     <TableContainer>
       <Table variant="simple">
-        <TableCaption>Monero Nodes</TableCaption>
+        <TableCaption>
+          <Link
+            href={'https://github.com/hundehausen/xmr-node-explorer-nextjs'}
+          >
+            <a target="_blank">GitHub</a>
+          </Link>
+        </TableCaption>
         <Thead>
           <Tr>
             {columns.map((column) => (
