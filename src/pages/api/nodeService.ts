@@ -1,6 +1,7 @@
 import { Network, Node } from '@prisma/client';
 import axios, { AxiosError } from 'axios';
 import { prisma } from 'lib/prisma';
+import fetchJsonRpc from 'lib/jsonRpcFetcher';
 
 export interface IInfo {
   height: number;
@@ -18,27 +19,14 @@ export const getNodeInfo = async (
   node: Partial<Node>
 ): Promise<IGetNodeInfo | null> => {
   try {
-    const host = node.url || node.ip;
-    const url = `http://${host}:${node.port}/json_rpc`;
-    const response = await axios.post(
-      url,
-      {
-        jsonrpc: '2.0',
-        id: '0',
-        method: 'get_info',
-        contentType: 'application/json',
-      },
-      {
-        timeout: 2000,
-      }
-    );
+    const response = await fetchJsonRpc(node, 'get_info');
 
     if (response.data.error) {
       console.warn(response.data.error);
       return null;
     }
 
-    if (response?.data?.result) {
+    if (response.data.result) {
       return {
         info: response.data.result,
         ip: response.request.socket.remoteAddress,
@@ -55,6 +43,40 @@ export const getNodeInfo = async (
       }
     }
     return null;
+  }
+};
+
+export const getNodeVersion = async (node: Partial<Node>): Promise<string> => {
+  try {
+    const response = await fetchJsonRpc(node, 'get_version');
+
+    if (response.data.error) {
+      console.warn(response.data.error);
+      return '';
+    }
+
+    if (response.data?.result) {
+      const { version } = response.data.result;
+      switch (version) {
+        case 196617:
+          return '0.17.3.2';
+        case 196618:
+          return '0.18.0.0';
+        default:
+          return version.toString();
+      }
+    }
+
+    return '';
+  } catch (error) {
+    console.warn(error);
+    if (axios.isAxiosError(error)) {
+      const serverError = error as AxiosError;
+      if (serverError && serverError.response) {
+        console.warn(serverError.response.data);
+      }
+    }
+    return '';
   }
 };
 

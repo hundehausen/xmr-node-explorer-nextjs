@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Node, Network } from '@prisma/client';
-import { getNodeInfo } from './nodeService';
+import { getNodeInfo, getNodeVersion } from './nodeService';
 import { prisma } from 'lib/prisma';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -29,12 +29,17 @@ const getHandler = async (
 
   if (update === 'true') {
     nodes.forEach(async (node) => {
-      const result = await getNodeInfo({ url: node.url, port: node.port });
-      if (result) {
-        const { info, ip } = result;
-        const { height, version } = info;
+      const infoResult = await getNodeInfo({ url: node.url, port: node.port });
+
+      if (infoResult) {
+        const { info, ip } = infoResult;
+        const { height } = info;
 
         if (info.status === 'OK') {
+          const version = await getNodeVersion({
+            url: node.url,
+            port: node.port,
+          });
           await prisma.node.update({
             where: { id: node.id },
             data: {
@@ -67,15 +72,15 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
     return;
   }
 
-  const result = await getNodeInfo({ url, port });
+  const infoResult = await getNodeInfo({ url, port });
 
-  if (!result) {
+  if (!infoResult) {
     res.status(500).end('Failed to get node info');
     return;
   }
 
-  const { info, ip } = result;
-  const { height, nettype, version } = info;
+  const { info, ip } = infoResult;
+  const { height, nettype } = info;
 
   let network;
   if (nettype === 'mainnet') {
@@ -85,6 +90,13 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
   } else {
     network = Network.STAGENET;
   }
+
+  if (info.status !== 'OK') {
+    res.status(500).end('Failed to get node info');
+    return;
+  }
+
+  const version = await getNodeVersion({ url, port });
 
   const node = await prisma.node.upsert({
     where: {
