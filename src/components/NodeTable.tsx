@@ -19,6 +19,7 @@ interface IRows {
   height: number;
   network: string;
   ip: string;
+  version: string;
   lastSeenFromNow: string;
 }
 
@@ -36,6 +37,7 @@ const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
     height: node.height,
     network: node.network,
     ip: node.ip,
+    version: node.version,
     lastSeenFromNow: formatDistance(new Date(node.lastSeen), new Date(), {
       addSuffix: true,
     }),
@@ -47,6 +49,7 @@ const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
     'height',
     'network',
     'ip',
+    'version',
     'lastSeenFromNow',
   ];
   const columns = [
@@ -73,6 +76,10 @@ const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
     {
       key: 'ip',
       label: 'IP Address',
+    },
+    {
+      key: 'version',
+      label: 'Version',
     },
     {
       key: 'lastSeenFromNow',

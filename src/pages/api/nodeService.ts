@@ -6,6 +6,7 @@ export interface IInfo {
   height: number;
   nettype: string;
   status: string;
+  version: string;
 }
 
 interface IGetNodeInfo {

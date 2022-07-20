@@ -32,7 +32,7 @@ const getHandler = async (
       const result = await getNodeInfo({ url: node.url, port: node.port });
       if (result) {
         const { info, ip } = result;
-        const { height } = info;
+        const { height, version } = info;
 
         if (info.status === 'OK') {
           await prisma.node.update({
@@ -41,6 +41,7 @@ const getHandler = async (
               height: height,
               ip: ip,
               lastSeen: new Date(),
+              version: version,
             },
           });
         }
@@ -74,7 +75,7 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
   }
 
   const { info, ip } = result;
-  const { height, nettype } = info;
+  const { height, nettype, version } = info;
 
   let network;
   if (nettype === 'mainnet') {
@@ -100,6 +101,7 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
       ip: ip,
       height: height,
       network: network,
+      version: version,
     },
     create: {
       country: country,
@@ -109,6 +111,7 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
       ip: ip,
       height: height,
       network: network,
+      version: version,
     },
   });
   res.status(200).json(node);
