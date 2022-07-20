@@ -22,6 +22,7 @@ const Home: NextPage = () => {
           res.json()
         ),
       {
+        refetchInterval: 60 * 1000,
         initialData: () => {
           const allNodes = queryClient.getQueryData<Node[]>(['nodes']) ?? [];
           const filtredNodes = allNodes.filter(
