@@ -6,7 +6,7 @@ import AddNode from 'components/AddNode';
 import NetworkSelector from 'components/NetworkSelector';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { QueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Head from 'next/head';
 
 const Home: NextPage = () => {
@@ -30,21 +30,20 @@ const Home: NextPage = () => {
           );
           return filtredNodes?.length ? filtredNodes : [];
         },
+        onSuccess: (data) => {
+          if (data?.length) {
+            const allHeights = data?.map((node) => node.height) ?? [];
+            const largestNum =
+              allHeights?.reduce((accumulatedValue, currentValue) => {
+                return Math.max(accumulatedValue, currentValue);
+              }) || 0;
+            setMaxHeight(largestNum);
+          }
+        },
       }
     );
 
   const { isLoading, isError, data, error } = useNodesQuery(network);
-
-  useEffect(() => {
-    if (data?.length) {
-      const allHeights = data?.map((node) => node.height) ?? [];
-      const largestNum =
-        allHeights?.reduce((accumulatedValue, currentValue) => {
-          return Math.max(accumulatedValue, currentValue);
-        }) || 0;
-      setMaxHeight(largestNum);
-    }
-  }, [data]);
 
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error: {error?.message}</p>;
