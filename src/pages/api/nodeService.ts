@@ -96,7 +96,7 @@ export const getFeeEstimation = async (
       return fee;
     }
 
-    return 0;
+    return -1;
   } catch (error) {
     console.warn(error);
     if (axios.isAxiosError(error)) {
