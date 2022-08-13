@@ -176,13 +176,23 @@ export const findNodePeers = async (id: number): Promise<Partial<Node>[]> => {
   }
 };
 
-export const getCountryFromIpAddress = async (ip: string): Promise<string> => {
+export interface ICountries {
+  countryName: string;
+  countryCode: string;
+}
+
+export const getCountryFromIpAddress = async (
+  ip: string
+): Promise<ICountries> => {
   try {
     const response = await axios.get(`https://ipapi.co/${ip}/json/`);
     if (response?.data?.country_name) {
-      return response.data.country_name;
+      return {
+        countryName: response.data.country_name,
+        countryCode: response.data.country,
+      };
     }
-    return 'unknown';
+    return { countryName: 'unknown', countryCode: 'unknown' };
   } catch (error) {
     console.warn(error);
     throw error;

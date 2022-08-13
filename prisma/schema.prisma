@@ -10,16 +10,17 @@ generator client {
 }
 
 model Node {
-  id       Int      @id @default(autoincrement())
-  country  String?
-  height   Int
-  ip       String
-  lastSeen DateTime @default(now())
-  port     Int
-  url      String?
-  network  Network  @default(MAINNET)
-  version  String?
-  fee      Int?     @default(0)
+  id          Int      @id @default(autoincrement())
+  country     String?
+  countryCode String?
+  height      Int
+  ip          String
+  lastSeen    DateTime @default(now())
+  port        Int
+  url         String?
+  network     Network  @default(MAINNET)
+  version     String?
+  fee         Int?     @default(0)
 
   @@unique([url, port], name: "nodeIdentifier")
 }
