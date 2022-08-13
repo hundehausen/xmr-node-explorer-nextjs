@@ -1,6 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Node, Network } from '@prisma/client';
-import { getFeeEstimation, getNodeInfo, getNodeVersion } from './nodeService';
+import {
+  getFeeEstimation,
+  getNodeInfo,
+  getCountryFromIpAddress,
+} from './nodeService';
 import { prisma } from 'lib/prisma';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -46,6 +50,11 @@ const getHandler = async (
             port: node.port,
           });
 
+          let country = node.country;
+          if (!node.country) {
+            country = await getCountryFromIpAddress(ip);
+          }
+
           await prisma.node.update({
             where: { id: node.id },
             data: {
@@ -54,6 +63,7 @@ const getHandler = async (
               lastSeen: new Date(),
               // version: version,
               fee: fee,
+              country: country,
             },
           });
         }
@@ -72,7 +82,7 @@ const getHandler = async (
 
 const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
   const body: Partial<Node> = req.body;
-  const { country, port, url } = body;
+  const { port, url } = body;
 
   if (!port || !url) {
     res.status(400).end('Missing required fields');
@@ -102,6 +112,8 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
     res.status(500).end('Failed to get node info');
     return;
   }
+
+  const country = await getCountryFromIpAddress(ip);
 
   // const version = await getNodeVersion({ url, port });
 

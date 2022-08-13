@@ -175,3 +175,16 @@ export const findNodePeers = async (id: number): Promise<Partial<Node>[]> => {
     throw error;
   }
 };
+
+export const getCountryFromIpAddress = async (ip: string): Promise<string> => {
+  try {
+    const response = await axios.get(`https://ipapi.co/${ip}/json/`);
+    if (response?.data?.country_name) {
+      return response.data.country_name;
+    }
+    return 'unknown';
+  } catch (error) {
+    console.warn(error);
+    throw error;
+  }
+};

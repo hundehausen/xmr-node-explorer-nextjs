@@ -6,7 +6,6 @@ import type { QueryClient } from '@tanstack/react-query';
 
 const AddNode = () => {
   const [url, setUrl] = useState('');
-  const [country, setCountry] = useState('');
   const [port, setPort] = useState(18089);
   const [queryClient] = useState<QueryClient>(useQueryClient());
 
@@ -17,10 +16,6 @@ const AddNode = () => {
   const handlePortChange = (event: {
     target: { value: SetStateAction<string> };
   }) => setPort(Number(event.target.value));
-
-  const handleCountryChange = (event: {
-    target: { value: SetStateAction<string> };
-  }) => setCountry(event.target.value);
 
   const mutations = useMutation<Response, unknown, Partial<Node>, unknown>(
     ['nodes'],
@@ -37,12 +32,11 @@ const AddNode = () => {
 
   const handleSubmit = () => {
     mutations.mutate(
-      { url, port, country },
+      { url, port },
       {
         onSuccess: () => {
           setUrl('');
           setPort(18089);
-          setCountry('');
           queryClient.invalidateQueries(['nodes']);
         },
       }
@@ -79,16 +73,6 @@ const AddNode = () => {
             minWidth={160}
             maxLength={6}
             type="number"
-          />
-        </WrapItem>
-        <WrapItem>
-          <Input
-            value={country}
-            onChange={handleCountryChange}
-            placeholder="Country"
-            size="sm"
-            minWidth={160}
-            maxLength={30}
           />
         </WrapItem>
         <WrapItem>
