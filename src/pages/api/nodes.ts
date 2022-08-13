@@ -4,6 +4,7 @@ import {
   getFeeEstimation,
   getNodeInfo,
   getCountryFromIpAddress,
+  ICountries,
 } from './nodeService';
 import { prisma } from 'lib/prisma';
 
@@ -51,8 +52,11 @@ const getHandler = async (
           });
 
           let country = node.country;
-          if (!node.country) {
-            country = await getCountryFromIpAddress(ip);
+          let countryCode = node.countryCode;
+          if (!node.country || !node.countryCode) {
+            const countyObject = await getCountryFromIpAddress(ip);
+            country = countyObject.countryName;
+            countryCode = countyObject.countryCode;
           }
 
           await prisma.node.update({
@@ -64,6 +68,7 @@ const getHandler = async (
               // version: version,
               fee: fee,
               country: country,
+              countryCode: countryCode,
             },
           });
         }
@@ -113,7 +118,9 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
     return;
   }
 
-  const country = await getCountryFromIpAddress(ip);
+  const { countryName: country, countryCode } = await getCountryFromIpAddress(
+    ip
+  );
 
   // const version = await getNodeVersion({ url, port });
 
@@ -128,6 +135,7 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
     },
     update: {
       country: country,
+      countryCode: countryCode,
       lastSeen: new Date(),
       port: port,
       url: url,
@@ -139,6 +147,7 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
     },
     create: {
       country: country,
+      countryCode: countryCode,
       lastSeen: new Date(),
       port: port,
       url: url,

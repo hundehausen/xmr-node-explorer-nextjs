@@ -11,6 +11,7 @@ import {
 import { Node } from '@prisma/client';
 import formatDistance from 'date-fns/formatDistance';
 import Link from 'next/link';
+import getUnicodeFlagIcon from 'country-flag-icons/unicode';
 
 interface IRows {
   id: number;
@@ -49,12 +50,19 @@ const determineCellColor = (
   return 'black';
 };
 
+const determineFlagIcon = (countryCode: string | null): string => {
+  if (countryCode && countryCode !== 'unknown') {
+    return getUnicodeFlagIcon(countryCode);
+  }
+  return '🏴‍☠️';
+};
+
 const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
   const rows: IRows[] = nodes.map((node) => ({
     id: node.id,
     url: node.url,
     port: node.port,
-    country: node.country,
+    country: `${determineFlagIcon(node.countryCode)} ${node.country}`,
     height: node.height,
     network: node.network,
     ip: node.ip,
