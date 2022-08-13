@@ -80,6 +80,35 @@ export const getNodeVersion = async (node: Partial<Node>): Promise<string> => {
   }
 };
 
+export const getFeeEstimation = async (
+  node: Partial<Node>
+): Promise<number> => {
+  try {
+    const response = await fetchJsonRpc(node, 'get_fee_estimate');
+
+    if (response.data.error) {
+      console.warn(response.data.error);
+      return -1;
+    }
+
+    if (response.data?.result) {
+      const { fee } = response.data.result;
+      return fee;
+    }
+
+    return -1;
+  } catch (error) {
+    console.warn(error);
+    if (axios.isAxiosError(error)) {
+      const serverError = error as AxiosError;
+      if (serverError && serverError.response) {
+        console.warn(serverError.response.data);
+      }
+    }
+    return -1;
+  }
+};
+
 interface IWhiteListPeersGeneral {
   host: string;
   id: number;

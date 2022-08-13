@@ -8,13 +8,13 @@
 - Shows last time seen
 - Switch between different network types
 - Add your favorite nodes
+- Check for malicious nodes with high fees (displays fee in piconero per byte)
 
 ## Wishlist of features by the community:
 
 - Display the version of the node
 - Scan automatically for nodes in the networks
 - Display uptime and reliability of the node
-- Check for malicious nodes with high fees
 
 ## Tech Stack
 
