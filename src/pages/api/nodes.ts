@@ -28,7 +28,7 @@ const getHandler = async (
   });
 
   if (update === 'true') {
-    nodes.forEach(async (node) => {
+    for await (const node of nodes) {
       const infoResult = await getNodeInfo({ url: node.url, port: node.port });
 
       if (infoResult) {
@@ -36,22 +36,22 @@ const getHandler = async (
         const { height } = info;
 
         if (info.status === 'OK') {
-          const version = await getNodeVersion({
+          /* const version = await getNodeVersion({
             url: node.url,
             port: node.port,
-          });
+          }); */
           await prisma.node.update({
             where: { id: node.id },
             data: {
               height: height,
               ip: ip,
               lastSeen: new Date(),
-              version: version,
+              // version: version,
             },
           });
         }
       }
-    });
+    }
 
     const updatedNodes = await prisma.node.findMany({
       where: { network: network },
@@ -96,7 +96,7 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
     return;
   }
 
-  const version = await getNodeVersion({ url, port });
+  // const version = await getNodeVersion({ url, port });
 
   const node = await prisma.node.upsert({
     where: {
@@ -113,7 +113,7 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
       ip: ip,
       height: height,
       network: network,
-      version: version,
+      // version: version,
     },
     create: {
       country: country,
@@ -123,7 +123,7 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
       ip: ip,
       height: height,
       network: network,
-      version: version,
+      // version: version,
     },
   });
   res.status(200).json(node);

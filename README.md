@@ -7,11 +7,11 @@
 - Detects IP address of the node
 - Shows last time seen
 - Switch between different network types
-- Display the version of the node
 - Add your favorite nodes
 
 ## Wishlist of features by the community:
 
+- Display the version of the node
 - Scan automatically for nodes in the networks
 - Display uptime and reliability of the node
 - Check for malicious nodes with high fees

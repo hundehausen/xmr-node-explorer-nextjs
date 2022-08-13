@@ -1,18 +1,16 @@
 import type { NextPage } from 'next';
 import { Network, Node } from '@prisma/client';
-import { Box, Heading } from '@chakra-ui/react';
+import { Box, Center, Heading, Spinner } from '@chakra-ui/react';
 import NodeTable from 'components/NodeTable';
 import AddNode from 'components/AddNode';
 import NetworkSelector from 'components/NetworkSelector';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type { QueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import Head from 'next/head';
 
 const Home: NextPage = () => {
   const [network, setNetwork] = useState<Network>(Network.MAINNET);
   const [maxHeight, setMaxHeight] = useState(0);
-  const [queryClient] = useState<QueryClient>(useQueryClient());
 
   const useNodesQuery = (network: Network) =>
     useQuery<Node[], Error>(
@@ -23,13 +21,6 @@ const Home: NextPage = () => {
         ),
       {
         refetchInterval: 60 * 1000,
-        initialData: () => {
-          const allNodes = queryClient.getQueryData<Node[]>(['nodes']) ?? [];
-          const filtredNodes = allNodes.filter(
-            (node) => node.network === network
-          );
-          return filtredNodes?.length ? filtredNodes : [];
-        },
         onSuccess: (data) => {
           if (data?.length) {
             const allHeights = data?.map((node) => node.height) ?? [];
@@ -44,9 +35,6 @@ const Home: NextPage = () => {
     );
 
   const { isLoading, isError, data, error } = useNodesQuery(network);
-
-  if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Error: {error?.message}</p>;
 
   return (
     <Box p={8}>
@@ -66,6 +54,13 @@ const Home: NextPage = () => {
         <AddNode />
         <NetworkSelector network={network} setNetwork={setNetwork} />
       </Box>
+      {isLoading && (
+        <Center height="100px">
+          <Spinner color="red.500" />
+          <p>Loading...</p>
+        </Center>
+      )}
+      {isError && <p>Error: {error?.message}</p>}
       {data && <NodeTable nodes={data} maxHeight={maxHeight} />}
     </Box>
   );
