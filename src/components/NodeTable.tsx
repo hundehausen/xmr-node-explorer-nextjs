@@ -21,6 +21,7 @@ interface IRows {
   network: string;
   ip: string;
   // version: string | null;
+  fee: number | null;
   lastSeenFromNow: string;
 }
 
@@ -28,6 +29,25 @@ interface NodeTableProps {
   nodes: Node[];
   maxHeight: number;
 }
+
+const determineCellColor = (
+  value: number,
+  columnKey: string,
+  maxHeight: number
+): string => {
+  if (columnKey === 'height') {
+    if (value === maxHeight) {
+      return 'green';
+    }
+    return 'black';
+  }
+  if (columnKey === 'fee') {
+    if (value > 8000) {
+      return 'red';
+    }
+  }
+  return 'black';
+};
 
 const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
   const rows: IRows[] = nodes.map((node) => ({
@@ -39,6 +59,7 @@ const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
     network: node.network,
     ip: node.ip,
     // version: node.version,
+    fee: node.fee,
     lastSeenFromNow: formatDistance(new Date(node.lastSeen), new Date(), {
       addSuffix: true,
     }),
@@ -51,6 +72,7 @@ const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
     'network',
     'ip',
     // 'version',
+    'fee',
     'lastSeenFromNow',
   ];
   const columns = [
@@ -83,6 +105,11 @@ const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
       label: 'Version',
     }, */
     {
+      key: 'fee',
+      label: 'Estimated fee',
+      tooltip: 'in piconero per byte',
+    },
+    {
       key: 'lastSeenFromNow',
       label: 'Last Seen',
     },
@@ -101,7 +128,9 @@ const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
         <Thead>
           <Tr>
             {columns.map((column) => (
-              <Th key={column.key}>{column.label}</Th>
+              <Th key={column.key} title={column.tooltip}>
+                {column.label}
+              </Th>
             ))}
           </Tr>
         </Thead>
@@ -110,7 +139,11 @@ const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
             <Tr key={row.id}>
               {columnKeys.map((columnKey) => (
                 <Td
-                  color={row[columnKey] === maxHeight ? 'green' : 'black'}
+                  color={determineCellColor(
+                    row[columnKey] as number,
+                    columnKey,
+                    maxHeight
+                  )}
                   key={columnKey}
                 >
                   {row[columnKey]?.toString() || ''}

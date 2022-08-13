@@ -19,6 +19,7 @@ model Node {
   url      String?
   network  Network  @default(MAINNET)
   version  String?
+  fee      Int?     @default(0)
 
   @@unique([url, port], name: "nodeIdentifier")
 }

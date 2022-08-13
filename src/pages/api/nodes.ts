@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Node, Network } from '@prisma/client';
-import { getNodeInfo, getNodeVersion } from './nodeService';
+import { getFeeEstimation, getNodeInfo, getNodeVersion } from './nodeService';
 import { prisma } from 'lib/prisma';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -40,6 +40,12 @@ const getHandler = async (
             url: node.url,
             port: node.port,
           }); */
+
+          const fee = await getFeeEstimation({
+            url: node.url,
+            port: node.port,
+          });
+
           await prisma.node.update({
             where: { id: node.id },
             data: {
@@ -47,6 +53,7 @@ const getHandler = async (
               ip: ip,
               lastSeen: new Date(),
               // version: version,
+              fee: fee,
             },
           });
         }
@@ -98,6 +105,8 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
 
   // const version = await getNodeVersion({ url, port });
 
+  const fee = await getFeeEstimation({ url, port });
+
   const node = await prisma.node.upsert({
     where: {
       nodeIdentifier: {
@@ -114,6 +123,7 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
       height: height,
       network: network,
       // version: version,
+      fee: fee,
     },
     create: {
       country: country,
@@ -124,6 +134,7 @@ const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
       height: height,
       network: network,
       // version: version,
+      fee: fee,
     },
   });
   res.status(200).json(node);
