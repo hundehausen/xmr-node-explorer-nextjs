@@ -42,7 +42,7 @@ const determineCellColor = (
     return 'black';
   }
   if (columnKey === 'fee') {
-    if (value > 8000) {
+    if (value > 20000) {
       return 'red';
     }
   }
