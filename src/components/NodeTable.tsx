@@ -8,7 +8,7 @@ import {
   TableCaption,
   TableContainer,
 } from '@chakra-ui/react';
-import { Node } from '@prisma/client';
+import { Node, Network } from '@prisma/client';
 import formatDistance from 'date-fns/formatDistance';
 import Link from 'next/link';
 import getUnicodeFlagIcon from 'country-flag-icons/unicode';
@@ -34,7 +34,8 @@ interface NodeTableProps {
 const determineCellColor = (
   value: number,
   columnKey: string,
-  maxHeight: number
+  maxHeight: number,
+  network: string
 ): string => {
   if (columnKey === 'height') {
     if (value === maxHeight) {
@@ -43,7 +44,7 @@ const determineCellColor = (
     return 'black';
   }
   if (columnKey === 'fee') {
-    if (value > 20000) {
+    if (value > 20000 && network === Network.MAINNET) {
       return 'red';
     }
   }
@@ -150,7 +151,8 @@ const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
                   color={determineCellColor(
                     row[columnKey] as number,
                     columnKey,
-                    maxHeight
+                    maxHeight,
+                    row.network
                   )}
                   key={columnKey}
                 >
