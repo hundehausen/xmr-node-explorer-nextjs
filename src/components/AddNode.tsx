@@ -3,6 +3,16 @@ import { SetStateAction, useState } from 'react';
 import { Node } from '@prisma/client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { QueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+import { Toaster, toast } from 'react-hot-toast';
+
+type ErrorResponse = {
+  response: {
+    data: {
+      error: string;
+    };
+  };
+};
 
 const AddNode = () => {
   const [url, setUrl] = useState('');
@@ -17,27 +27,24 @@ const AddNode = () => {
     target: { value: SetStateAction<string> };
   }) => setPort(Number(event.target.value));
 
-  const mutations = useMutation<Response, unknown, Partial<Node>, unknown>(
+  const mutation = useMutation<Node, ErrorResponse, Partial<Node>, unknown>(
     ['nodes'],
-    async (newNode) => {
-      return fetch('/api/nodes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newNode),
-      });
-    }
+    (newNode) => axios.post(`/api/nodes`, newNode)
   );
 
   const handleSubmit = () => {
-    mutations.mutate(
+    mutation.mutate(
       { url, port },
       {
         onSuccess: () => {
           setUrl('');
           setPort(18089);
           queryClient.invalidateQueries(['nodes']);
+          toast.success('Node added successfully');
+        },
+        onError(error, variables, context) {
+          console.error(error.response.data.error, variables, context);
+          toast.error(error.response.data.error);
         },
       }
     );
@@ -45,6 +52,9 @@ const AddNode = () => {
 
   return (
     <Box p={5} m={5} shadow="md" borderWidth="1px">
+      <div>
+        <Toaster />
+      </div>
       <Heading
         size="md"
         paddingBottom={2}

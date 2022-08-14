@@ -48,6 +48,7 @@ const Home: NextPage = () => {
           bgGradient="linear(to-l, #7928CA, #FF0080)"
           bgClip="text"
           marginBottom={2}
+          marginLeft={5}
         >
           Portemonero Node Explorer
         </Heading>

@@ -6,7 +6,8 @@ const fetchJsonRpc = async (
   method: string
 ): Promise<AxiosResponse<any, any>> => {
   const host = node.url || node.ip;
-  const url = `http://${host}:${node.port}/json_rpc`;
+  const protocol = node.port === 443 ? 'https' : 'http';
+  const url = `${protocol}://${host}:${node.port}/json_rpc`;
   return axios.post(
     url,
     {

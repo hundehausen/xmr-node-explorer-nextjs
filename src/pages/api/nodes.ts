@@ -85,19 +85,22 @@ const getHandler = async (
   }
 };
 
-const postHandler = async (req: NextApiRequest, res: NextApiResponse<Node>) => {
+const postHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse<Node | unknown>
+) => {
   const body: Partial<Node> = req.body;
   const { port, url } = body;
 
   if (!port || !url) {
-    res.status(400).end('Missing required fields');
+    res.status(400).json({ error: 'port and url are required' });
     return;
   }
 
   const infoResult = await getNodeInfo({ url, port });
 
   if (!infoResult) {
-    res.status(500).end('Failed to get node info');
+    res.status(500).json({ error: 'Could not get node info' });
     return;
   }
 
