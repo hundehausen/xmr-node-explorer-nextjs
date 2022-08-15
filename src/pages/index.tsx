@@ -42,6 +42,13 @@ const Home: NextPage = () => {
         <link rel="shortcut icon" href="/favicon.ico" />
         <title>Portemonero Node Explorer</title>
         <meta name="description" content="Yet Another Monero Node Explorer." />
+        <meta property="og:title" content="Portemonero Node Explorer" />
+        <meta
+          property="og:description"
+          content="Yet Another Monero Node Explorer."
+        />
+        <meta property="og:url" content="https://explorer.portemonero.com/" />
+        <meta property="og:type" content="website" />
       </Head>
       <Box>
         <Heading
