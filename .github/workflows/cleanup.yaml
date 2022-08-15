@@ -1,0 +1,13 @@
+name: hourly-cron-cleanup
+on:
+  schedule:
+    - cron: '0 */1 * * *'
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call cleanup endpoint
+        run: |
+          curl --request DELETE \
+          --url 'https://explorer.portemonero.com/api/cleanup' \
+          --header 'Authorization: Bearer ${{ secrets.API_SECRET_KEY }}'

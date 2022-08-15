@@ -4,16 +4,23 @@ import { updateNodes } from './nodeService';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'DELETE') {
-    getHandler(req, res);
+    deleteHandler(req, res);
   } else {
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
 
-const getHandler = async (
+const deleteHandler = async (
   req: NextApiRequest,
   res: NextApiResponse<number>
 ) => {
+  const authorizationHeader = req.headers['Authorization'];
+
+  if (authorizationHeader !== `Bearer ${process.env.API_SECRET_KEY}`) {
+    res.status(401).end('Unauthorized');
+    return;
+  }
+
   try {
     // first update the nodes
     const nodes = await prisma.node.findMany({});
@@ -26,7 +33,9 @@ const getHandler = async (
         },
       },
     });
-    console.log(`Deleted ${count} nodes`);
+    console.log(
+      count === 0 ? `No nodes were deleted` : `Deleted ${count} nodes`
+    );
     res.status(200).json(count);
   } catch (error) {
     console.warn(error);
