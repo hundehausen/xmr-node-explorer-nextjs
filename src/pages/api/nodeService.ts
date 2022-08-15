@@ -13,6 +13,7 @@ export interface IInfo {
 interface IGetNodeInfo {
   info: IInfo;
   ip: string;
+  webCompatible: boolean;
 }
 
 export const getNodeInfo = async (
@@ -27,9 +28,12 @@ export const getNodeInfo = async (
     }
 
     if (response.data.result) {
+      const webCompatible =
+        response?.headers['access-control-allow-origin'] === '*';
       return {
         info: response.data.result,
         ip: response.request.socket.remoteAddress,
+        webCompatible,
       };
     }
 
