@@ -1,7 +1,7 @@
-name: hourly-cron-cleanup
+name: minutly-cron-cleanup
 on:
   schedule:
-    - cron: '0 */1 * * *'
+    - cron: '*/1 * * * *'
 jobs:
   cron:
     runs-on: ubuntu-latest
