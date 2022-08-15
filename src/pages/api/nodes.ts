@@ -4,7 +4,6 @@ import {
   getFeeEstimation,
   getNodeInfo,
   getCountryFromIpAddress,
-  ICountries,
   updateNodes,
 } from './nodeService';
 import { prisma } from 'lib/prisma';
@@ -77,7 +76,7 @@ const postHandler = async (
   }
 
   if (info.status !== 'OK') {
-    res.status(500).end('Failed to get node info');
+    res.status(500).json({ error: 'Failed to get node info' });
     return;
   }
 
