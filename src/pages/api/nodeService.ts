@@ -198,3 +198,47 @@ export const getCountryFromIpAddress = async (
     throw error;
   }
 };
+
+export const updateNodes = async (nodes: Partial<Node>[]) => {
+  for await (const node of nodes) {
+    const infoResult = await getNodeInfo({ url: node.url, port: node.port });
+
+    if (infoResult) {
+      const { info, ip } = infoResult;
+      const { height } = info;
+
+      if (info.status === 'OK') {
+        /* const version = await getNodeVersion({
+          url: node.url,
+          port: node.port,
+        }); */
+
+        const fee = await getFeeEstimation({
+          url: node.url,
+          port: node.port,
+        });
+
+        let country = node.country;
+        let countryCode = node.countryCode;
+        if (!node.country || !node.countryCode) {
+          const countyObject = await getCountryFromIpAddress(ip);
+          country = countyObject.countryName;
+          countryCode = countyObject.countryCode;
+        }
+
+        await prisma.node.update({
+          where: { id: node.id },
+          data: {
+            height: height,
+            ip: ip,
+            lastSeen: new Date(),
+            // version: version,
+            fee: fee,
+            country: country,
+            countryCode: countryCode,
+          },
+        });
+      }
+    }
+  }
+};
