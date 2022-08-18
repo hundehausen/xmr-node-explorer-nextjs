@@ -1,7 +1,7 @@
 name: minutly-cron-cleanup
 on:
   schedule:
-    - cron: '*/1 * * * *'
+    - cron: '*/15 * * * *'
 jobs:
   cron:
     runs-on: ubuntu-latest
