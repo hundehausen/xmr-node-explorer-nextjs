@@ -1,4 +1,4 @@
-import type { NextPage } from 'next';
+import type { GetServerSideProps, NextPage } from 'next';
 import { Network, Node } from '@prisma/client';
 import { Box, Center, Heading, Spinner } from '@chakra-ui/react';
 import NodeTable from 'components/NodeTable';
@@ -7,8 +7,13 @@ import NetworkSelector from 'components/NetworkSelector';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import Head from 'next/head';
+import { prisma } from 'lib/prisma';
 
-const Home: NextPage = () => {
+interface NextPageProps {
+  nodes: string;
+}
+
+const Home: NextPage<NextPageProps> = (props) => {
   const [network, setNetwork] = useState<Network>(Network.MAINNET);
   const [maxHeight, setMaxHeight] = useState(0);
 
@@ -31,6 +36,7 @@ const Home: NextPage = () => {
             setMaxHeight(largestNum);
           }
         },
+        initialData: JSON.parse(props.nodes),
       }
     );
 
@@ -72,6 +78,15 @@ const Home: NextPage = () => {
       {data && <NodeTable nodes={data} maxHeight={maxHeight} />}
     </Box>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const nodes = await prisma.node.findMany();
+  return {
+    props: {
+      nodes: JSON.stringify(nodes),
+    },
+  };
 };
 
 export default Home;
