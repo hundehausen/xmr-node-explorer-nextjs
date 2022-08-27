@@ -14,7 +14,7 @@ const deleteHandler = async (
   req: NextApiRequest,
   res: NextApiResponse<number>
 ) => {
-  const authorizationHeader = req.headers['Authorization'];
+  const authorizationHeader = req.headers['authorization'];
 
   if (authorizationHeader !== `Bearer ${process.env.API_SECRET_KEY}`) {
     res.status(401).end('Unauthorized');
