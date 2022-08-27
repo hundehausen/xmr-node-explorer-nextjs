@@ -13,6 +13,15 @@ interface NextPageProps {
   nodes: string;
 }
 
+const determineMaxHeight = (nodes: Node[]): number => {
+  const allHeights = nodes?.map((node) => node.height) ?? [];
+  const largestNum =
+    allHeights?.reduce((accumulatedValue, currentValue) => {
+      return Math.max(accumulatedValue, currentValue);
+    }) || 0;
+  return largestNum;
+};
+
 const Home: NextPage<NextPageProps> = (props) => {
   const [network, setNetwork] = useState<Network>(Network.MAINNET);
   const [maxHeight, setMaxHeight] = useState(0);
@@ -28,15 +37,13 @@ const Home: NextPage<NextPageProps> = (props) => {
         refetchInterval: 60 * 1000,
         onSuccess: (data) => {
           if (data?.length) {
-            const allHeights = data?.map((node) => node.height) ?? [];
-            const largestNum =
-              allHeights?.reduce((accumulatedValue, currentValue) => {
-                return Math.max(accumulatedValue, currentValue);
-              }) || 0;
-            setMaxHeight(largestNum);
+            setMaxHeight(determineMaxHeight(data));
           }
         },
-        initialData: JSON.parse(props.nodes),
+        initialData: () => {
+          const allNodes: Node[] = JSON.parse(props.nodes);
+          return allNodes.filter((node) => node.network === network);
+        },
       }
     );
 
