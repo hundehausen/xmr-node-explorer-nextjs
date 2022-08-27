@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { QueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { Toaster, toast } from 'react-hot-toast';
+import MoneroButton from './MoneroButton';
 
 type ErrorResponse = {
   response: {
@@ -86,18 +87,14 @@ const AddNode = () => {
           />
         </WrapItem>
         <WrapItem>
-          <Button
+          <MoneroButton
             onClick={handleSubmit}
             disabled={!url || !port}
-            bgGradient="linear(to-l, #7928CA, #FF0080)"
-            textColor={'white'}
-            _hover={{
-              bgGradient: 'linear(to-r, red.500, yellow.500)',
-            }}
+            isLoading={mutation.isLoading}
             minWidth={110}
           >
             Submit
-          </Button>
+          </MoneroButton>
         </WrapItem>
       </Wrap>
     </Box>
