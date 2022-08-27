@@ -8,10 +8,13 @@ import {
   TableCaption,
   TableContainer,
 } from '@chakra-ui/react';
+import { TriangleDownIcon, TriangleUpIcon } from '@chakra-ui/icons';
+import { createColumnHelper, useReactTable } from '@tanstack/react-table';
 import { Node, Network } from '@prisma/client';
 import formatDistance from 'date-fns/formatDistance';
 import Link from 'next/link';
 import getUnicodeFlagIcon from 'country-flag-icons/unicode';
+import { useMemo } from 'react';
 
 interface IRows {
   id: number;
@@ -25,6 +28,21 @@ interface IRows {
   fee: number | null;
   lastSeenFromNow: string;
 }
+
+type NodeShape = {
+  id: number;
+  url: string | null;
+  port: number;
+  country: string | null;
+  height: number;
+  network: string;
+  ip: string;
+  // version: string | null;
+  fee: number | null;
+  lastSeenFromNow: string;
+};
+
+const columnHelper = createColumnHelper<NodeShape>();
 
 interface NodeTableProps {
   nodes: Node[];
@@ -59,7 +77,7 @@ const determineFlagIcon = (countryCode: string | null): string => {
 };
 
 const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
-  const rows: IRows[] = nodes.map((node) => ({
+  const data: NodeShape[] = nodes.map((node) => ({
     id: node.id,
     url: node.url,
     port: node.port,
@@ -73,56 +91,66 @@ const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
       addSuffix: true,
     }),
   }));
-  const columnKeys: (keyof IRows)[] = [
-    'url',
-    'port',
-    'country',
-    'height',
-    'network',
-    'ip',
-    // 'version',
-    'fee',
-    'lastSeenFromNow',
-  ];
-  const columns = [
-    {
-      key: 'url',
-      label: 'URL',
-    },
-    {
-      key: 'port',
-      label: 'Port',
-    },
-    {
-      key: 'country',
-      label: 'Country',
-    },
-    {
-      key: 'height',
-      label: 'Height',
-    },
-    {
-      key: 'network',
-      label: 'Network',
-    },
-    {
-      key: 'ip',
-      label: 'IP Address',
-    },
-    /* {
-      key: 'version',
-      label: 'Version',
+  /*   const columnKeys: (keyof IRows)[] = useMemo(
+    () => [
+      'url',
+      'port',
+      'country',
+      'height',
+      'network',
+      'ip',
+      // 'version',
+      'fee',
+      'lastSeenFromNow',
+    ],
+    []
+  ); */
+
+  const columns = useMemo(
+    () => [
+      {
+        accessor: 'url',
+        Header: 'URL',
+      },
+      {
+        accessor: 'port',
+        Header: 'Port',
+      },
+      {
+        accessor: 'country',
+        Header: 'Country',
+      },
+      {
+        accessor: 'height',
+        Header: 'Height',
+      },
+      {
+        accessor: 'network',
+        Header: 'Network',
+      },
+      {
+        accessor: 'ip',
+        Header: 'IP Address',
+      },
+      /* {
+      accessor: 'version',
+      Header: 'Version',
     }, */
-    {
-      key: 'fee',
-      label: 'Estimated fee',
-      tooltip: 'in piconero per byte',
-    },
-    {
-      key: 'lastSeenFromNow',
-      label: 'Last Seen',
-    },
-  ];
+      {
+        accessor: 'fee',
+        Header: 'Estimated fee',
+        tooltip: 'in piconero per byte',
+      },
+      {
+        accessor: 'lastSeenFromNow',
+        Header: 'Last Seen',
+      },
+    ],
+    []
+  );
+
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    useReactTable({ columns, data }, useSortBy);
 
   return (
     <TableContainer>
@@ -137,8 +165,8 @@ const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
         <Thead>
           <Tr>
             {columns.map((column) => (
-              <Th key={column.key} title={column.tooltip}>
-                {column.label}
+              <Th key={column.accessor} title={column.tooltip}>
+                {column.Header}
               </Th>
             ))}
           </Tr>
