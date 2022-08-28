@@ -5,7 +5,10 @@ const fetchJsonRpcSecure = async (
   node: Partial<Node>,
   method: string
 ): Promise<AxiosResponse<any, any>> => {
-  const host = node.url;
+  if (!node?.url) {
+    throw new Error('Node has no url');
+  }
+  const host = node.url?.replace(/^https?:\/\//, '');
   for await (const protocol of ['https', 'http']) {
     const url = `${protocol}://${host}:${node.port}/json_rpc`;
     try {

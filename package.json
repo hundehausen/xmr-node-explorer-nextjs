@@ -22,13 +22,16 @@
     "country-flag-icons": "^1.5.5",
     "date-fns": "^2.29.1",
     "framer-motion": "^7.2.0",
+    "leaflet": "^1.8.0",
     "next": "12.2.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.3.0",
+    "react-leaflet": "^4.0.2",
     "react-table": "^7.8.0"
   },
   "devDependencies": {
+    "@types/leaflet": "^1.7.11",
     "@types/node": "^18.7.6",
     "@types/react": "18.0.17",
     "@types/react-dom": "18.0.6",

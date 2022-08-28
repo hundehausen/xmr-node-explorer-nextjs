@@ -2,6 +2,7 @@ import { Network, Node } from '@prisma/client';
 import axios, { AxiosError } from 'axios';
 import { prisma } from 'lib/prisma';
 import fetchJsonRpc from 'lib/jsonRpcFetcher';
+import { Prisma } from '@prisma/client';
 
 export interface IInfo {
   height: number;
@@ -183,6 +184,8 @@ export const findNodePeers = async (id: number): Promise<Partial<Node>[]> => {
 export interface ICountries {
   countryName: string;
   countryCode: string;
+  latitude: number;
+  longitude: number;
 }
 
 export const getCountryFromIpAddress = async (
@@ -194,9 +197,16 @@ export const getCountryFromIpAddress = async (
       return {
         countryName: response.data.country_name,
         countryCode: response.data.country,
+        latitude: response.data.latitude,
+        longitude: response.data.longitude,
       };
     }
-    return { countryName: 'unknown', countryCode: 'unknown' };
+    return {
+      countryName: 'unknown',
+      countryCode: 'unknown',
+      latitude: 0,
+      longitude: 0,
+    };
   } catch (error) {
     console.warn(error);
     throw error;
@@ -224,10 +234,19 @@ export const updateNodes = async (nodes: Partial<Node>[]) => {
 
         let country = node.country;
         let countryCode = node.countryCode;
-        if (!node.country || !node.countryCode) {
+        let latitude = node.latitude;
+        let longitude = node.longitude;
+        if (
+          !node.country ||
+          !node.countryCode ||
+          !node.latitude ||
+          !node.longitude
+        ) {
           const countyObject = await getCountryFromIpAddress(ip);
           country = countyObject.countryName;
           countryCode = countyObject.countryCode;
+          latitude = new Prisma.Decimal(countyObject.latitude);
+          longitude = new Prisma.Decimal(countyObject.longitude);
         }
 
         await prisma.node.update({
@@ -240,6 +259,8 @@ export const updateNodes = async (nodes: Partial<Node>[]) => {
             fee: fee,
             country: country,
             countryCode: countryCode,
+            latitude: latitude,
+            longitude: longitude,
           },
         });
       }

@@ -21,6 +21,8 @@ model Node {
   network     Network  @default(MAINNET)
   version     String?
   fee         Int?     @default(0)
+  latitude    Decimal?
+  longitude   Decimal?
 
   @@unique([url, port], name: "nodeIdentifier")
 }

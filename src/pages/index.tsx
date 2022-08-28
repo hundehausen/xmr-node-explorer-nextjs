@@ -1,53 +1,28 @@
 import type { GetServerSideProps, NextPage } from 'next';
-import { Network, Node } from '@prisma/client';
+import { Network } from '@prisma/client';
 import { Box, Center, Heading, Spinner } from '@chakra-ui/react';
 import NodeTable from 'components/NodeTable';
 import AddNode from 'components/AddNode';
 import NetworkSelector from 'components/NetworkSelector';
-import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import Head from 'next/head';
 import { prisma } from 'lib/prisma';
+import { useNodesQuery } from 'hooks/useNodes';
+import Footer from 'components/Footer';
 
 interface NextPageProps {
-  nodes: string;
+  ssrNodes: string;
 }
 
-const determineMaxHeight = (nodes: Node[]): number => {
-  const allHeights = nodes?.map((node) => node.height) ?? [];
-  const largestNum =
-    allHeights?.reduce((accumulatedValue, currentValue) => {
-      return Math.max(accumulatedValue, currentValue);
-    }) || 0;
-  return largestNum;
-};
-
-const Home: NextPage<NextPageProps> = (props) => {
+const Home: NextPage<NextPageProps> = ({ ssrNodes }) => {
   const [network, setNetwork] = useState<Network>(Network.MAINNET);
   const [maxHeight, setMaxHeight] = useState(0);
 
-  const useNodesQuery = (network: Network) =>
-    useQuery<Node[], Error>(
-      ['nodes', network],
-      () =>
-        fetch(`/api/nodes?update=true&network=${network}`).then((res) =>
-          res.json()
-        ),
-      {
-        refetchInterval: 60 * 1000,
-        onSuccess: (data) => {
-          if (data?.length) {
-            setMaxHeight(determineMaxHeight(data));
-          }
-        },
-        initialData: () => {
-          const allNodes: Node[] = JSON.parse(props.nodes);
-          return allNodes.filter((node) => node.network === network);
-        },
-      }
-    );
-
-  const { isLoading, isError, data, error } = useNodesQuery(network);
+  const { isLoading, isError, data, error } = useNodesQuery(
+    network,
+    setMaxHeight,
+    ssrNodes
+  );
 
   return (
     <Box p={8}>
@@ -83,6 +58,7 @@ const Home: NextPage<NextPageProps> = (props) => {
       )}
       {isError && <p>Error: {error?.message}</p>}
       {data && <NodeTable nodes={data} maxHeight={maxHeight} />}
+      <Footer />
     </Box>
   );
 };
@@ -91,7 +67,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const nodes = await prisma.node.findMany();
   return {
     props: {
-      nodes: JSON.stringify(nodes),
+      ssrNodes: JSON.stringify(nodes),
     },
   };
 };
