@@ -2,6 +2,8 @@ import dynamic from 'next/dynamic';
 import { GetServerSideProps, NextPage } from 'next';
 import { useMemo } from 'react';
 import { prisma } from 'lib/prisma';
+import Footer from 'components/Footer';
+import Head from 'next/head';
 
 interface NextPageProps {
   ssrNodes: string;
@@ -17,7 +19,27 @@ const MapPage: NextPage<NextPageProps> = ({ ssrNodes }) => {
       }),
     []
   );
-  return <Map nodes={nodes}></Map>;
+  return (
+    <>
+      <Head>
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <title>Portemonero Node Map</title>
+        <meta name="description" content="Yet Another Monero Node Explorer." />
+        <meta property="og:title" content="Portemonero Node Map" />
+        <meta
+          property="og:description"
+          content="Yet Another Monero Node Explorer."
+        />
+        <meta
+          property="og:url"
+          content="https://explorer.portemonero.com/map"
+        />
+        <meta property="og:type" content="website" />
+      </Head>
+      <Map nodes={nodes} />
+      <Footer />
+    </>
+  );
 };
 
 export const getServerSideProps: GetServerSideProps = async () => {

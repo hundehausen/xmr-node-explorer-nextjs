@@ -1,8 +1,7 @@
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { Node } from '@prisma/client';
-import Footer from './Footer';
-import { Box, Heading, Text } from '@chakra-ui/react';
+import { Box, Heading } from '@chakra-ui/react';
 
 const Map = ({ nodes }: { nodes: Node[] }) => {
   debugger;
@@ -42,7 +41,6 @@ const Map = ({ nodes }: { nodes: Node[] }) => {
           ))}
         </MapContainer>
       </Box>
-      <Footer />
     </>
   );
 };
