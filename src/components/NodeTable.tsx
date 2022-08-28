@@ -5,12 +5,10 @@ import {
   Tr,
   Th,
   Td,
-  TableCaption,
   TableContainer,
 } from '@chakra-ui/react';
 import { Node, Network } from '@prisma/client';
 import formatDistance from 'date-fns/formatDistance';
-import Link from 'next/link';
 import getUnicodeFlagIcon from 'country-flag-icons/unicode';
 
 interface IRows {

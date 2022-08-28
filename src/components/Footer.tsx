@@ -1,4 +1,4 @@
-import { Center, Flex, SimpleGrid } from '@chakra-ui/react';
+import { Center, SimpleGrid } from '@chakra-ui/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 

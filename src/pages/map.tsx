@@ -2,6 +2,7 @@ import dynamic from 'next/dynamic';
 import { GetServerSideProps, NextPage } from 'next';
 import { useMemo } from 'react';
 import { prisma } from 'lib/prisma';
+import Footer from 'components/Footer';
 
 interface NextPageProps {
   ssrNodes: string;
@@ -17,7 +18,12 @@ const MapPage: NextPage<NextPageProps> = ({ ssrNodes }) => {
       }),
     []
   );
-  return <Map nodes={nodes}></Map>;
+  return (
+    <>
+      <Map nodes={nodes} />
+      <Footer />
+    </>
+  );
 };
 
 export const getServerSideProps: GetServerSideProps = async () => {
