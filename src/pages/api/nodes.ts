@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { Node, Network } from '@prisma/client';
+import { Node, Network, Prisma } from '@prisma/client';
 import {
   getFeeEstimation,
   getNodeInfo,
@@ -49,7 +49,8 @@ const postHandler = async (
   res: NextApiResponse<Node | unknown>
 ) => {
   const body: Partial<Node> = req.body;
-  const { port, url } = body;
+  const port = body.port;
+  const url = body?.url?.replace(/^https?:\/\//, '');
 
   if (!port || !url) {
     res.status(400).json({ error: 'port and url are required' });
@@ -80,9 +81,12 @@ const postHandler = async (
     return;
   }
 
-  const { countryName: country, countryCode } = await getCountryFromIpAddress(
-    ip
-  );
+  const {
+    countryName: country,
+    countryCode,
+    latitude,
+    longitude,
+  } = await getCountryFromIpAddress(ip);
 
   // const version = await getNodeVersion({ url, port });
 
@@ -106,6 +110,8 @@ const postHandler = async (
       network: network,
       // version: version,
       fee: fee,
+      latitude: new Prisma.Decimal(latitude),
+      longitude: new Prisma.Decimal(longitude),
     },
     create: {
       country: country,
@@ -118,6 +124,8 @@ const postHandler = async (
       network: network,
       // version: version,
       fee: fee,
+      latitude: new Prisma.Decimal(latitude),
+      longitude: new Prisma.Decimal(longitude),
     },
   });
   res.status(200).json(node);

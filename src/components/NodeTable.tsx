@@ -127,13 +127,6 @@ const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
   return (
     <TableContainer>
       <Table variant="simple">
-        <TableCaption>
-          <Link
-            href={'https://github.com/hundehausen/xmr-node-explorer-nextjs'}
-          >
-            <a target="_blank">GitHub</a>
-          </Link>
-        </TableCaption>
         <Thead>
           <Tr>
             {columns.map((column) => (
