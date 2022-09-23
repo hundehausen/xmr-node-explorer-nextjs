@@ -4,7 +4,6 @@ import type { Node } from '@prisma/client';
 import { Box, Heading } from '@chakra-ui/react';
 
 const Map = ({ nodes }: { nodes: Node[] }) => {
-  debugger;
   return (
     <>
       <Box p={8}>
