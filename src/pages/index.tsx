@@ -9,6 +9,7 @@ import Head from 'next/head';
 import { prisma } from 'lib/prisma';
 import { useNodesQuery } from 'hooks/useNodes';
 import Footer from 'components/Footer';
+import Link from 'next/link';
 
 interface NextPageProps {
   ssrNodes: string;
@@ -39,14 +40,17 @@ const Home: NextPage<NextPageProps> = ({ ssrNodes }) => {
         <meta property="og:type" content="website" />
       </Head>
       <Box>
-        <Heading
-          bgGradient="linear(to-l, #7928CA, #FF0080)"
-          bgClip="text"
-          marginBottom={2}
-          marginLeft={5}
-        >
-          Portemonero Node Explorer
-        </Heading>
+        <Link href="/">
+          <Heading
+            bgGradient="linear(to-l, #7928CA, #FF0080)"
+            bgClip="text"
+            marginBottom={2}
+            marginLeft={5}
+          >
+            Portemonero Node Explorer
+          </Heading>
+        </Link>
+
         <AddNode />
         <NetworkSelector network={network} setNetwork={setNetwork} />
       </Box>

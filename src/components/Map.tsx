@@ -2,18 +2,22 @@ import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { Node } from '@prisma/client';
 import { Box, Heading } from '@chakra-ui/react';
+import Link from 'next/link';
 
 const Map = ({ nodes }: { nodes: Node[] }) => {
   return (
     <>
       <Box p={8}>
-        <Heading
-          bgGradient="linear(to-l, #7928CA, #FF0080)"
-          bgClip="text"
-          marginBottom={2}
-        >
-          Portemonero Node Map
-        </Heading>
+        <Link href="/">
+          <Heading
+            bgGradient="linear(to-l, #7928CA, #FF0080)"
+            bgClip="text"
+            marginBottom={2}
+          >
+            Portemonero Node Map
+          </Heading>
+        </Link>
+
         <MapContainer
           center={[51.505, -0.09]}
           zoom={2}

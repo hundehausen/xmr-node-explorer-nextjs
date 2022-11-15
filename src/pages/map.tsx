@@ -1,5 +1,5 @@
 import dynamic from 'next/dynamic';
-import { GetServerSideProps, NextPage } from 'next';
+import type { GetServerSideProps, NextPage } from 'next';
 import { useMemo } from 'react';
 import { prisma } from 'lib/prisma';
 import Footer from 'components/Footer';

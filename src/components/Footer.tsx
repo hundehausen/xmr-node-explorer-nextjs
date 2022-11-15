@@ -10,22 +10,19 @@ const Footer = () => {
         <Center>
           <Link
             href={'https://github.com/hundehausen/xmr-node-explorer-nextjs'}
+            target="_blank"
           >
-            <a target="_blank">GitHub</a>
+            GitHub
           </Link>
         </Center>
         {router.pathname === '/' && (
           <Center>
-            <Link href={'/map'}>
-              <a>Map</a>
-            </Link>
+            <Link href={'/map'}>Map</Link>
           </Center>
         )}
         {router.pathname === '/map' && (
           <Center>
-            <Link href={'/'}>
-              <a>Node Explorer</a>
-            </Link>
+            <Link href={'/'}>Node Explorer</Link>
           </Center>
         )}
       </SimpleGrid>
