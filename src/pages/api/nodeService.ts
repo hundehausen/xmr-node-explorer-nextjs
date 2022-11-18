@@ -3,7 +3,6 @@ import axios, { AxiosError } from 'axios';
 import { prisma } from 'lib/prisma';
 import fetchJsonRpc from 'lib/jsonRpcFetcher';
 import { Prisma } from '@prisma/client';
-
 export interface IInfo {
   height: number;
   nettype: string;
@@ -23,6 +22,10 @@ export const getNodeInfo = async (
   try {
     const response = await fetchJsonRpc(node, 'get_info');
 
+    if (!response) {
+      return null;
+    }
+
     if (response.data.error) {
       console.warn(response.data.error);
       return null;
@@ -37,7 +40,6 @@ export const getNodeInfo = async (
         webCompatible,
       };
     }
-
     return null;
   } catch (error) {
     console.warn(error);
@@ -54,6 +56,10 @@ export const getNodeInfo = async (
 export const getNodeVersion = async (node: Partial<Node>): Promise<string> => {
   try {
     const response = await fetchJsonRpc(node, 'get_version');
+
+    if (!response) {
+      return '';
+    }
 
     if (response.data.error) {
       console.warn(response.data.error);
@@ -91,6 +97,8 @@ export const getFeeEstimation = async (
   try {
     const response = await fetchJsonRpc(node, 'get_fee_estimate');
 
+    if (!response) return -1;
+
     if (response.data.error) {
       console.warn(response.data.error);
       return -1;
@@ -114,7 +122,7 @@ export const getFeeEstimation = async (
   }
 };
 
-interface IWhiteListPeersGeneral {
+export interface IWhiteListPeersGeneral {
   host: string;
   id: number;
   ip: number;
@@ -123,13 +131,15 @@ interface IWhiteListPeersGeneral {
   rpc_port?: number;
 }
 
-export const findNodePeers = async (id: number): Promise<Partial<Node>[]> => {
+export const findNodePeers = async (id: number): Promise<Node[]> => {
   const startNode = await prisma.node.findUnique({
     where: { id },
   });
+
   if (!startNode) {
     return [];
   }
+
   const { url, port } = startNode;
   try {
     const response = await axios.post(`http://${url}:${port}/get_peer_list`);
@@ -144,8 +154,8 @@ export const findNodePeers = async (id: number): Promise<Partial<Node>[]> => {
             port: peer.rpc_port,
           };
         });
-      const addedNodes = [];
-      for (const node of nodes) {
+      const addedNodes: Node[] = [];
+      for await (const node of nodes) {
         const result = await getNodeInfo(node);
         if (result) {
           const { info, ip } = result;
@@ -159,16 +169,19 @@ export const findNodePeers = async (id: number): Promise<Partial<Node>[]> => {
             network = Network.STAGENET;
           }
           if (info.status === 'OK') {
+            const countyObject = await getCountryFromIpAddress(ip);
             addedNodes.push({
               ip: ip,
-              port: node.port,
+              port: node.port || -1,
               height: height,
               network: network,
               lastSeen: new Date(),
               url: ip,
-              country: 'unknown',
-            });
-            console.log('Added node');
+              country: countyObject.countryName,
+              countryCode: countyObject.countryCode,
+              latitude: new Prisma.Decimal(countyObject.latitude),
+              longitude: new Prisma.Decimal(countyObject.longitude),
+            } as Node);
           }
         }
       }

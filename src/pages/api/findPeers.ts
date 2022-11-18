@@ -7,15 +7,23 @@ export default async function handler(
 ) {
   if (req.method === 'GET') {
     const id = req.query.id as string;
+    const addToDb = req.query.addToDb as string;
 
     if (!id) {
-      res.status(400).json({ error: 'Missing id' });
+      res.status(400).json({
+        error:
+          'Missing id of starting node. Check your database for the id of a node.',
+      });
       return;
     }
 
     try {
       const nodes = await findNodePeers(parseInt(id));
       res.status(200).json(nodes);
+
+      if (process?.env.NODE_ENV === 'development' && addToDb === 'true') {
+        await prisma?.node.createMany({ data: nodes });
+      }
     } catch (error) {
       res.status(500).json({ error });
     }
