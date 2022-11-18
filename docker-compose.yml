@@ -1,11 +1,10 @@
-version: "3.0"
+version: "3"
 
 services:
   db:
     container_name: "monoero-node-explorer-db"
     hostname: postgres
     image: postgres:latest
-    command: postgres -c stats_temp_directory=/tmp
     restart: unless-stopped
     volumes:
       - ./postgresql:/var/lib/postgresql/data
@@ -16,15 +15,3 @@ services:
       - POSTGRES_PASSWORD=node
     ports:
       - 5432:5432
-      
-  pgadmin:
-    container_name: "monoero-node-explorer-pgadmin"
-    image: dpage/pgadmin4
-    depends_on:
-      - db
-    ports:
-      - 5555:80
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@node.live
-      PGADMIN_DEFAULT_PASSWORD: node
-    restart: unless-stopped

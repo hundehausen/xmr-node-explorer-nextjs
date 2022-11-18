@@ -16,6 +16,23 @@
 - Scan automatically for nodes in the networks
 - Display uptime and reliability of the node
 
+## Installation
+
+```
+git clone https://github.com/hundehausen/xmr-node-explorer-nextjs.git
+cd xmr-node-explorer-nextjs
+yarn install
+cp .env.example .env
+edit .env to your needs
+edit prisma/schema.prisma to your needs (you might want change provider to your db type)
+docker-compose up
+npx prisma migrate dev
+yarn dev
+```
+
+Go to localhost:3000 in your browser
+you can inspect the database with `npx prisma studio`
+
 ## Tech Stack
 
 - [React](https://reactjs.org/)
