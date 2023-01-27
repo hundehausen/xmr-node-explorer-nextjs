@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from 'lib/prisma';
 import { updateNodes } from './nodeService';
+import { Network } from '@prisma/client';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'DELETE') {
@@ -25,12 +26,37 @@ const deleteHandler = async (
     // first update the nodes
     const nodes = await prisma.node.findMany({});
     updateNodes(nodes);
-    // deletes nodes that haven't been seen in the last seven days
+    // the nodes with highest height
+    const mostRecentMainnetNode = nodes
+      .filter((node) => node.network === Network.MAINNET)
+      .reduce((prev, current) =>
+        prev.height > current.height ? prev : current
+      );
     const { count } = await prisma.node.deleteMany({
       where: {
-        lastSeen: {
-          lt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
-        },
+        OR: [
+          {
+            // delete nodes that lack haven't been online for 7 days
+            lastSeen: {
+              lt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
+            },
+          },
+          {
+            // delete nodes that lack 120 blocks behind
+            AND: [
+              {
+                height: {
+                  lt: mostRecentMainnetNode.height - 120,
+                },
+              },
+              {
+                network: {
+                  equals: Network.MAINNET,
+                },
+              },
+            ],
+          },
+        ],
       },
     });
     const message =

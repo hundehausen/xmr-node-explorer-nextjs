@@ -36,8 +36,13 @@ const determineCellColor = (
   network: string
 ): string => {
   if (columnKey === 'height') {
+    if (maxHeight === 0) {
+      return 'black';
+    }
     if (value === maxHeight) {
       return 'green';
+    } else if (value + 30 < maxHeight) {
+      return 'red';
     }
     return 'black';
   }
@@ -139,12 +144,16 @@ const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
             <Tr key={row.id}>
               {columnKeys.map((columnKey) => (
                 <Td
-                  color={determineCellColor(
-                    row[columnKey] as number,
-                    columnKey,
-                    maxHeight,
-                    row.network
-                  )}
+                  color={
+                    columnKey === 'height' || columnKey === 'fee'
+                      ? determineCellColor(
+                          row[columnKey] as number,
+                          columnKey,
+                          maxHeight,
+                          row.network
+                        )
+                      : 'black'
+                  }
                   key={columnKey}
                 >
                   {row[columnKey]?.toString() || ''}
