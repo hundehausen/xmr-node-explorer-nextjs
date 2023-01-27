@@ -24,7 +24,7 @@ const deleteHandler = async (
   try {
     // first update the nodes
     const nodes = await prisma.node.findMany({});
-    await updateNodes(nodes);
+    updateNodes(nodes);
     // deletes nodes that haven't been seen in the last seven days
     const { count } = await prisma.node.deleteMany({
       where: {
