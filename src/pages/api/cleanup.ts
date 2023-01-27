@@ -12,7 +12,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
 const deleteHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<number>
+  res: NextApiResponse<{ deletedNodes: number; message: string }>
 ) => {
   const authorizationHeader = req.headers['authorization'];
 
@@ -33,12 +33,15 @@ const deleteHandler = async (
         },
       },
     });
-    console.log(
-      count === 0 ? `No nodes were deleted` : `Deleted ${count} nodes`
-    );
-    res.status(200).json(count);
+    const message =
+      count === 0 ? `No nodes were deleted` : `Deleted ${count} nodes`;
+    console.log(message);
+    res.status(200).json({
+      deletedNodes: count,
+      message: message,
+    });
   } catch (error) {
     console.warn(error);
-    res.status(500).json(0);
+    res.status(500).end('Failed to delete unavailable nodes.');
   }
 };
