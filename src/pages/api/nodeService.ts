@@ -11,24 +11,41 @@ export interface IInfo {
 }
 
 interface IGetNodeInfo {
-  info: IInfo;
-  ip: string;
+  info: IInfo | null;
+  ip: string | null;
   webCompatible: boolean;
+  reachable: boolean;
+  time: Date;
+  responseTime: number;
 }
 
 export const getNodeInfo = async (
   node: Partial<Node>
-): Promise<IGetNodeInfo | null> => {
+): Promise<IGetNodeInfo> => {
   try {
     const response = await fetchJsonRpc(node, 'get_info');
 
     if (!response) {
-      return null;
+      return {
+        info: null,
+        ip: null,
+        webCompatible: false,
+        reachable: false,
+        time: new Date(),
+        responseTime: -1,
+      };
     }
 
     if (response.data.error) {
       console.warn(response.data.error);
-      return null;
+      return {
+        info: null,
+        ip: response.request.socket.remoteAddress,
+        webCompatible: false,
+        reachable: false,
+        time: new Date(),
+        responseTime: response.duration ?? -1,
+      };
     }
 
     if (response.data.result) {
@@ -38,9 +55,19 @@ export const getNodeInfo = async (
         info: response.data.result,
         ip: response.request.socket.remoteAddress,
         webCompatible,
+        reachable: true,
+        time: new Date(),
+        responseTime: response.duration ?? -1,
       };
     }
-    return null;
+    return {
+      info: null,
+      ip: response.request.socket.remoteAddress,
+      webCompatible: false,
+      reachable: false,
+      time: new Date(),
+      responseTime: response.duration ?? -1,
+    };
   } catch (error) {
     console.warn(error);
     if (axios.isAxiosError(error)) {
@@ -49,7 +76,14 @@ export const getNodeInfo = async (
         console.warn(serverError.response.data);
       }
     }
-    return null;
+    return {
+      info: null,
+      ip: null,
+      webCompatible: false,
+      reachable: false,
+      time: new Date(),
+      responseTime: -1,
+    };
   }
 };
 
@@ -157,7 +191,7 @@ export const findNodePeers = async (id: number): Promise<Node[]> => {
       const addedNodes: Node[] = [];
       for await (const node of nodes) {
         const result = await getNodeInfo(node);
-        if (result) {
+        if (result?.info) {
           const { info, ip } = result;
           const { height, nettype } = info;
           let network;
@@ -168,7 +202,7 @@ export const findNodePeers = async (id: number): Promise<Node[]> => {
           } else {
             network = Network.STAGENET;
           }
-          if (info.status === 'OK') {
+          if (info.status === 'OK' && ip) {
             const countyObject = await getCountryFromIpAddress(ip);
             addedNodes.push({
               ip: ip,
@@ -230,8 +264,8 @@ export const updateNodes = async (nodes: Partial<Node>[]) => {
   for await (const node of nodes) {
     const infoResult = await getNodeInfo({ url: node.url, port: node.port });
 
-    if (infoResult) {
-      const { info, ip } = infoResult;
+    if (infoResult.info) {
+      const { info, ip, webCompatible } = infoResult;
       const { height } = info;
 
       if (info.status === 'OK') {
@@ -250,10 +284,11 @@ export const updateNodes = async (nodes: Partial<Node>[]) => {
         let latitude = node.latitude;
         let longitude = node.longitude;
         if (
-          !node.country ||
-          !node.countryCode ||
-          !node.latitude ||
-          !node.longitude
+          ip &&
+          (!node.country ||
+            !node.countryCode ||
+            !node.latitude ||
+            !node.longitude)
         ) {
           const countyObject = await getCountryFromIpAddress(ip);
           country = countyObject.countryName;
@@ -266,7 +301,7 @@ export const updateNodes = async (nodes: Partial<Node>[]) => {
           where: { id: node.id },
           data: {
             height: height,
-            ip: ip,
+            ip: ip ?? undefined,
             lastSeen: new Date(),
             // version: version,
             fee: fee,
@@ -274,9 +309,23 @@ export const updateNodes = async (nodes: Partial<Node>[]) => {
             countryCode: countryCode,
             latitude: latitude,
             longitude: longitude,
+            webCompatible: webCompatible,
           },
         });
       }
     }
+
+    if (!node.id) return;
+
+    const { reachable, time, responseTime } = infoResult;
+
+    await prisma.heartbeat.create({
+      data: {
+        time,
+        reachable,
+        responseTime,
+        nodeId: node.id,
+      },
+    });
   }
 };

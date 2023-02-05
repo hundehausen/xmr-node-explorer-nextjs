@@ -10,22 +10,35 @@ generator client {
 }
 
 model Node {
-  id          Int      @id @default(autoincrement())
-  country     String?
-  countryCode String?
-  height      Int
-  ip          String
-  lastSeen    DateTime @default(now())
-  port        Int
-  url         String?
-  network     Network  @default(MAINNET)
-  version     String?
-  fee         Int?     @default(0)
-  latitude    Decimal?
-  longitude   Decimal?
+  id            Int         @id @default(autoincrement())
+  country       String?
+  countryCode   String?
+  height        Int
+  ip            String
+  lastSeen      DateTime    @default(now())
+  port          Int
+  url           String?
+  network       Network     @default(MAINNET)
+  version       String?
+  fee           Int?        @default(0)
+  latitude      Decimal?
+  longitude     Decimal?
+  webCompatible Boolean     @default(false)
+  heartbeats    Heartbeat[]
 
   @@unique([url, port], name: "nodeIdentifier")
   @@index([lastSeen])
+}
+
+model Heartbeat {
+  id           Int      @id @default(autoincrement())
+  time         DateTime @default(now())
+  reachable    Boolean
+  responseTime Int
+  node         Node     @relation(fields: [nodeId], references: [id])
+  nodeId       Int
+
+  @@index([nodeId])
 }
 
 enum Network {
