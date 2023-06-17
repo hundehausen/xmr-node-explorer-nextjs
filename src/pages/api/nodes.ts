@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Node, Network, Prisma } from '@prisma/client';
 import {
@@ -65,6 +66,11 @@ const postHandler = async (
   }
 
   const { info, ip } = infoResult;
+
+  if (info?.status !== 'OK') {
+    res.status(500).json({ error: 'Failed to get node info' });
+    return;
+  }
   const { height, nettype } = info;
 
   let network;
@@ -76,17 +82,12 @@ const postHandler = async (
     network = Network.STAGENET;
   }
 
-  if (info.status !== 'OK') {
-    res.status(500).json({ error: 'Failed to get node info' });
-    return;
-  }
-
   const {
     countryName: country,
     countryCode,
     latitude,
     longitude,
-  } = await getCountryFromIpAddress(ip);
+  } = await getCountryFromIpAddress(ip!);
 
   // const version = await getNodeVersion({ url, port });
 
@@ -105,7 +106,7 @@ const postHandler = async (
       lastSeen: new Date(),
       port: port,
       url: url,
-      ip: ip,
+      ip: ip!,
       height: height,
       network: network,
       // version: version,
@@ -119,7 +120,7 @@ const postHandler = async (
       lastSeen: new Date(),
       port: port,
       url: url,
-      ip: ip,
+      ip: ip!,
       height: height,
       network: network,
       // version: version,

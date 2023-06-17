@@ -1,10 +1,47 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { Node } from '@prisma/client';
+
+type CustomConfig = InternalAxiosRequestConfig<any> & { metadata?: any };
+
+axios.interceptors.request.use(
+  (config) => {
+    const newConfig: CustomConfig = {
+      ...config,
+    };
+    newConfig.metadata = { startTime: new Date() };
+    return newConfig;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+type CustomResponse = AxiosResponse<any, any> & {
+  config?: any;
+  duration?: any;
+};
+
+axios.interceptors.response.use(
+  (response) => {
+    const newRes: CustomResponse = { ...response };
+    newRes.config.metadata.endTime = new Date();
+    newRes.duration =
+      newRes.config.metadata.endTime - newRes.config.metadata.startTime;
+    return newRes;
+  },
+  (error) => {
+    const newError = { ...error };
+    newError.config.metadata.endTime = new Date();
+    newError.duration =
+      newError.config.metadata.endTime - newError.config.metadata.startTime;
+    return Promise.reject(newError);
+  }
+);
 
 const fetchJsonRpcSecure = async (
   node: Partial<Node>,
   method: string
-): Promise<AxiosResponse<any, any> | undefined> => {
+): Promise<CustomResponse | undefined> => {
   if (node?.ip) {
     node.url = node.ip;
   }
