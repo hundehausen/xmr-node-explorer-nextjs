@@ -1,50 +1,40 @@
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { Node } from '@prisma/client';
-import { Box, Heading } from '@chakra-ui/react';
-import Link from 'next/link';
 
-const Map = ({ nodes }: { nodes: Node[] }) => {
+interface MapProps {
+  className?: string;
+  nodes: Node[];
+}
+
+const Map = ({ className, nodes }: MapProps) => {
   return (
-    <>
-      <Box p={8}>
-        <Link href="/">
-          <Heading
-            bgGradient="linear(to-l, #7928CA, #FF0080)"
-            bgClip="text"
-            marginBottom={2}
-          >
-            Portemonero Node Map
-          </Heading>
-        </Link>
-
-        <MapContainer
-          center={[51.505, -0.09]}
-          zoom={2}
-          scrollWheelZoom={false}
-          style={{ height: '500px', width: '100%' }}
+    <MapContainer
+      center={[51.505, -0.09]}
+      zoom={2}
+      scrollWheelZoom={false}
+      style={{ height: '500px', width: '100%' }}
+      className={className}
+    >
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      {nodes.map((node) => (
+        <Marker
+          key={node.id}
+          position={[Number(node.latitude), Number(node.longitude)]}
         >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          {nodes.map((node) => (
-            <Marker
-              key={node.id}
-              position={[Number(node.latitude), Number(node.longitude)]}
-            >
-              <Popup>
-                <ul style={{ listStyleType: 'none' }}>
-                  <li>URL: {node.url}</li>
-                  <li>Port: {node.port}</li>
-                  <li>Height: {node.height}</li>
-                </ul>
-              </Popup>
-            </Marker>
-          ))}
-        </MapContainer>
-      </Box>
-    </>
+          <Popup>
+            <ul style={{ listStyleType: 'none' }}>
+              <li>URL: {node.url}</li>
+              <li>Port: {node.port}</li>
+              <li>Height: {node.height}</li>
+            </ul>
+          </Popup>
+        </Marker>
+      ))}
+    </MapContainer>
   );
 };
 

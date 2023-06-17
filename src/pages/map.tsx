@@ -4,6 +4,8 @@ import { useMemo } from 'react';
 import { prisma } from 'lib/prisma';
 import Footer from 'components/Footer';
 import Head from 'next/head';
+import { Box, Heading } from '@chakra-ui/react';
+import Link from 'next/link';
 
 interface NextPageProps {
   ssrNodes: string;
@@ -36,7 +38,18 @@ const MapPage: NextPage<NextPageProps> = ({ ssrNodes }) => {
         />
         <meta property="og:type" content="website" />
       </Head>
-      <Map nodes={nodes} />
+      <Box p={8}>
+        <Link href="/">
+          <Heading
+            bgGradient="linear(to-l, #7928CA, #FF0080)"
+            bgClip="text"
+            marginBottom={2}
+          >
+            Portemonero Node Map
+          </Heading>
+        </Link>
+        <Map nodes={nodes} />
+      </Box>
       <Footer />
     </>
   );
