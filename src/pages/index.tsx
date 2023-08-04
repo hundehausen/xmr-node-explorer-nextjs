@@ -1,15 +1,15 @@
-import type { GetServerSideProps, NextPage } from 'next';
-import { Network } from '@prisma/client';
 import { Box, Center, Heading, Spinner } from '@chakra-ui/react';
-import NodeTable from 'components/NodeTable';
+import { Network } from '@prisma/client';
 import AddNode from 'components/AddNode';
-import NetworkSelector from 'components/NetworkSelector';
-import { useState } from 'react';
-import Head from 'next/head';
-import { prisma } from 'lib/prisma';
-import { useNodesQuery } from 'hooks/useNodes';
 import Footer from 'components/Footer';
+import NetworkSelector from 'components/NetworkSelector';
+import NodeTable from 'components/NodeTable';
+import { useNodesQuery } from 'hooks/useNodes';
+import { prisma } from 'lib/prisma';
+import type { GetServerSideProps, NextPage } from 'next';
+import Head from 'next/head';
 import Link from 'next/link';
+import { useState } from 'react';
 
 interface NextPageProps {
   ssrNodes: string;
@@ -22,7 +22,7 @@ const Home: NextPage<NextPageProps> = ({ ssrNodes }) => {
   const { isLoading, isError, data, error } = useNodesQuery(
     network,
     setMaxHeight,
-    ssrNodes
+    ssrNodes,
   );
 
   return (

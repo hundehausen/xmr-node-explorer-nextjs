@@ -1,5 +1,5 @@
-import axios, { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { Node } from '@prisma/client';
+import axios, { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 type CustomConfig = InternalAxiosRequestConfig<any> & { metadata?: any };
 
@@ -13,7 +13,7 @@ axios.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 type CustomResponse = AxiosResponse<any, any> & {
@@ -35,12 +35,12 @@ axios.interceptors.response.use(
     newError.duration =
       newError.config.metadata.endTime - newError.config.metadata.startTime;
     return Promise.reject(newError);
-  }
+  },
 );
 
 const fetchJsonRpcSecure = async (
   node: Partial<Node>,
-  method: string
+  method: string,
 ): Promise<CustomResponse | undefined> => {
   if (node?.ip) {
     node.url = node.ip;
@@ -64,12 +64,10 @@ const fetchJsonRpcSecure = async (
       },
       {
         timeout: 2000,
-      }
+      },
     );
 
-    if (response.status === 200) {
-      return response;
-    }
+    return response;
   } catch (error) {
     const url = `http://${host}:${node.port}/json_rpc`;
     const response = await axios.post(
@@ -82,7 +80,7 @@ const fetchJsonRpcSecure = async (
       },
       {
         timeout: 2000,
-      }
+      },
     );
 
     if (response.status === 200) {

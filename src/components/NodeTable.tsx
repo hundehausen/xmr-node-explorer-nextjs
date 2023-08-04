@@ -1,15 +1,15 @@
 import {
   Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
   TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
 } from '@chakra-ui/react';
-import { Node, Network } from '@prisma/client';
-import formatDistance from 'date-fns/formatDistance';
+import { Network, Node } from '@prisma/client';
 import getUnicodeFlagIcon from 'country-flag-icons/unicode';
+import formatDistance from 'date-fns/formatDistance';
 
 interface IRows {
   id: number;
@@ -33,7 +33,7 @@ const determineCellColor = (
   value: number,
   columnKey: string,
   maxHeight: number,
-  network: string
+  network: string,
 ): string => {
   if (columnKey === 'height') {
     if (maxHeight === 0) {
@@ -150,7 +150,7 @@ const NodeTable = ({ nodes, maxHeight }: NodeTableProps) => {
                           row[columnKey] as number,
                           columnKey,
                           maxHeight,
-                          row.network
+                          row.network,
                         )
                       : 'black'
                   }

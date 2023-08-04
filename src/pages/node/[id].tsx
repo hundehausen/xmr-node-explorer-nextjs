@@ -1,9 +1,9 @@
-import dynamic from 'next/dynamic';
 import { Heartbeat, Node } from '@prisma/client';
-import { GetServerSideProps } from 'next/types';
 import { prisma } from 'lib/prisma';
-import { useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { GetServerSideProps } from 'next/types';
+import { useMemo } from 'react';
 
 interface NodeDetailPageProps {
   node?: Node | undefined | null;
@@ -20,7 +20,7 @@ export default function NodeDetailPage({
         loading: () => <p>Detail information is loading</p>,
         ssr: false,
       }),
-    []
+    [],
   );
   if (!node) {
     return <>404 not found</>;

@@ -1,7 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { prisma } from 'lib/prisma';
-import { updateNodes } from './nodeService';
 import { Network } from '@prisma/client';
+import { prisma } from 'lib/prisma';
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+import { updateNodes } from './nodeService';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'DELETE') {
@@ -13,7 +14,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
 const deleteHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<{ deletedNodes: number; message: string }>
+  res: NextApiResponse<{ deletedNodes: number; message: string }>,
 ) => {
   const authorizationHeader = req.headers['authorization'];
 
@@ -30,7 +31,7 @@ const deleteHandler = async (
     const mostRecentMainnetNode = nodes
       .filter((node) => node.network === Network.MAINNET)
       .reduce((prev, current) =>
-        prev.height > current.height ? prev : current
+        prev.height > current.height ? prev : current,
       );
     const { count } = await prisma.node.deleteMany({
       where: {

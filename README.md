@@ -21,13 +21,13 @@
 ```
 git clone https://github.com/hundehausen/xmr-node-explorer-nextjs.git
 cd xmr-node-explorer-nextjs
-yarn install
+npm install
 cp .env.example .env
 edit .env to your needs
 edit prisma/schema.prisma to your needs (you might want change provider to your db type)
 docker-compose up
 npx prisma migrate dev
-yarn dev
+npm run dev
 ```
 
 Go to localhost:3000 in your browser

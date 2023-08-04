@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { Network, Node, Prisma } from '@prisma/client';
+import { prisma } from 'lib/prisma';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { Node, Network, Prisma } from '@prisma/client';
+
 import {
+  getCountryFromIpAddress,
   getFeeEstimation,
   getNodeInfo,
-  getCountryFromIpAddress,
   updateNodes,
 } from './nodeService';
-import { prisma } from 'lib/prisma';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
@@ -23,7 +24,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
 const getHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<Node[]>
+  res: NextApiResponse<Node[]>,
 ) => {
   const update = req.query.update as string;
   const network = req.query.network as Network | undefined;
@@ -47,7 +48,7 @@ const getHandler = async (
 
 const postHandler = async (
   req: NextApiRequest,
-  res: NextApiResponse<Node | unknown>
+  res: NextApiResponse<Node | unknown>,
 ) => {
   const body: Partial<Node> = req.body;
   const port = body.port;

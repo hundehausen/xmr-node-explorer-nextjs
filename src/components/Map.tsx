@@ -1,6 +1,7 @@
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+
 import type { Node } from '@prisma/client';
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 
 interface MapProps {
   className?: string;

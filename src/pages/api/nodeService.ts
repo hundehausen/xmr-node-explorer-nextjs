@@ -1,8 +1,8 @@
 import { Network, Node } from '@prisma/client';
-import axios, { AxiosError } from 'axios';
-import { prisma } from 'lib/prisma';
-import fetchJsonRpc from 'lib/jsonRpcFetcher';
 import { Prisma } from '@prisma/client';
+import axios, { AxiosError } from 'axios';
+import fetchJsonRpc from 'lib/jsonRpcFetcher';
+import { prisma } from 'lib/prisma';
 export interface IInfo {
   height: number;
   nettype: string;
@@ -20,7 +20,7 @@ interface IGetNodeInfo {
 }
 
 export const getNodeInfo = async (
-  node: Partial<Node>
+  node: Partial<Node>,
 ): Promise<IGetNodeInfo> => {
   try {
     const response = await fetchJsonRpc(node, 'get_info');
@@ -126,7 +126,7 @@ export const getNodeVersion = async (node: Partial<Node>): Promise<string> => {
 };
 
 export const getFeeEstimation = async (
-  node: Partial<Node>
+  node: Partial<Node>,
 ): Promise<number> => {
   try {
     const response = await fetchJsonRpc(node, 'get_fee_estimate');
@@ -236,7 +236,7 @@ export interface ICountries {
 }
 
 export const getCountryFromIpAddress = async (
-  ip: string
+  ip: string,
 ): Promise<ICountries> => {
   try {
     const response = await axios.get(`https://ipapi.co/${ip}/json/`);

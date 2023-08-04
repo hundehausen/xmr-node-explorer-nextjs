@@ -1,8 +1,8 @@
 import { clsx, Group, Indicator, LoadingOverlay } from '@mantine/core';
 import { Heartbeat, Node } from '@prisma/client';
+import Map from 'components/Map';
 import formatDistance from 'date-fns/formatDistance';
 import * as R from 'remeda';
-import Map from 'components/Map';
 
 interface DetailNodeProps {
   node?: Node;
@@ -27,7 +27,7 @@ const DetailNode = ({ node, heartbeats, className }: DetailNodeProps) => {
 
   const [reachable, unreachable] = R.partition(
     heartbeats,
-    (hb) => hb.reachable
+    (hb) => hb.reachable,
   );
 
   const reachablePercentage = (reachable.length / heartbeats.length) * 100;
@@ -36,7 +36,7 @@ const DetailNode = ({ node, heartbeats, className }: DetailNodeProps) => {
     <div
       className={clsx(
         className,
-        'max-w-4xl rounded-3xl bg-purple-300 flex flex-col p-12'
+        'max-w-4xl rounded-3xl bg-purple-300 flex flex-col p-12',
       )}
     >
       <div className="font-semibold text-3xl">{`${node.url} : ${node.port}`}</div>

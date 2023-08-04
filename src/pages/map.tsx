@@ -1,11 +1,11 @@
-import dynamic from 'next/dynamic';
-import type { GetServerSideProps, NextPage } from 'next';
-import { useMemo } from 'react';
-import { prisma } from 'lib/prisma';
-import Footer from 'components/Footer';
-import Head from 'next/head';
 import { Box, Heading } from '@chakra-ui/react';
+import Footer from 'components/Footer';
+import { prisma } from 'lib/prisma';
+import type { GetServerSideProps, NextPage } from 'next';
+import dynamic from 'next/dynamic';
+import Head from 'next/head';
 import Link from 'next/link';
+import { useMemo } from 'react';
 
 interface NextPageProps {
   ssrNodes: string;
@@ -19,7 +19,7 @@ const MapPage: NextPage<NextPageProps> = ({ ssrNodes }) => {
         loading: () => <p>Map is loading</p>,
         ssr: false,
       }),
-    []
+    [],
   );
   return (
     <>

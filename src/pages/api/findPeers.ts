@@ -1,9 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+
 import { findNodePeers } from './nodeService';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method === 'GET') {
     const id = req.query.id as string;

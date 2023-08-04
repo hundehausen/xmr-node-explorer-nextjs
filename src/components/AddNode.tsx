@@ -1,10 +1,11 @@
 import { Box, Heading, Input, Wrap, WrapItem } from '@chakra-ui/react';
-import { SetStateAction, useState } from 'react';
 import { Node } from '@prisma/client';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { QueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { Toaster, toast } from 'react-hot-toast';
+import { SetStateAction, useState } from 'react';
+import { toast, Toaster } from 'react-hot-toast';
+
 import MoneroButton from './MoneroButton';
 
 type ErrorResponse = {
@@ -30,7 +31,7 @@ const AddNode = () => {
 
   const mutation = useMutation<Node, ErrorResponse, Partial<Node>, unknown>(
     ['nodes'],
-    (newNode) => axios.post(`/api/nodes`, newNode)
+    (newNode) => axios.post(`/api/nodes`, newNode),
   );
 
   const handleSubmit = () => {
@@ -47,7 +48,7 @@ const AddNode = () => {
           console.error(error.response.data.error, variables, context);
           toast.error(error.response.data.error);
         },
-      }
+      },
     );
   };
 

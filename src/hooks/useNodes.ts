@@ -1,6 +1,6 @@
+import type { Node } from '@prisma/client';
 import { Network } from '@prisma/client';
 import { useQuery } from '@tanstack/react-query';
-import type { Node } from '@prisma/client';
 import { Dispatch, SetStateAction } from 'react';
 
 const determineMaxHeight = (nodes: Node[]): number => {
@@ -15,13 +15,13 @@ const determineMaxHeight = (nodes: Node[]): number => {
 export const useNodesQuery = (
   network: Network,
   setMaxHeight: Dispatch<SetStateAction<number>>,
-  ssrNodes: string
+  ssrNodes: string,
 ) =>
   useQuery<Node[], Error>(
     ['nodes', network],
     () =>
       fetch(`/api/nodes?update=true&network=${network}`).then((res) =>
-        res.json()
+        res.json(),
       ),
     {
       refetchInterval: 60 * 1000,
@@ -36,5 +36,5 @@ export const useNodesQuery = (
           return allNodes.filter((node) => node.network === network);
         }
       },
-    }
+    },
   );
